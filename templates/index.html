@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Moteur de recherche</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2>Sélection des options de recherche </h2>
+
+    <form method="post">
+        <div class="input-group">
+            <label for="mix">Concaténation :</label>
+            <select name="mix" id="mix" onchange="toggleCheckboxes()">
+                <option value="non">Non</option>
+                <option value="oui">Oui</option>
+            </select>
+        </div>
+
+        {% if session.logged_in %}
+            <a href="{{ url_for('logout') }}" class="logout-link">Déconnexion</a>
+        {% endif %}
+
+        <div class="input-group" id="checkboxes" aria-required="true">
+            <label>Descripteur(s) :</label><br>
+            
+            <input type="checkbox" name="BGR" id="BGR" class="single">
+            <label for="BGR">BGR</label><br>
+
+            <input type="checkbox" name="HSV" id="HSV" class="single" >
+            <label for="HSV">HSV</label><br>
+
+            <input type="checkbox" name="SIFT" id="SIFT" class="single" >
+            <label for="SIFT">SIFT</label><br>
+
+            <input type="checkbox" name="ORB" id="ORB" class="single" >
+            <label for="ORB">ORB</label><br>
+            
+            <input type="checkbox" name="GLCM" id="GLCM" class="single" >
+            <label for="GLCM">GLCM</label><br>
+            
+            <input type="checkbox" name="HOG" id="HOG" class="single" >
+            <label for="HOG">HOG</label><br>
+
+            <input type="checkbox" name="LBP" id="LBP" class="single" >
+            <label for="LBP">LBP</label><br>
+
+            <input type="checkbox" name="VGG16" id="VGG16" class="single" >
+            <label for="VGG16">VGG16</label><br>
+
+            <input type="checkbox" name="Xception" id="ResNet" class="single" >
+            <label for="ResNet">ResNet</label><br>
+
+        </div>
+
+        <div class="input-group" id="distances">
+            <label>Distances :</label><br>
+
+            <select name="distance" id="distanceSelect"  class="distance-option">
+                <option value="Euclidienne">Euclidienne</option>
+                <option value="Correlation">Correlation</option>
+                <option value="Chi carre">Chi Carré</option>
+                <option value="Intersection">Intersection</option>
+                <option value="Brute-force">Bhattacharyya</option>
+
+                <option value="Brute_force">Brute-force</option>
+                <option value="Flann">Flann</option>
+            </select>
+
+            <form method="POST" action="/">
+                <button type='submit' name="confirmation">Confirmer les choix</button>
+            </form>
+
+        </div>
+
+        <h2>Choix de l'image de requête</h2>
+        
+        <div class="input-group" id="imagerequete"></div>
+            <form method="POST" action="/">
+                <select name="imageSelect" id="imageSelect"  class="distance-option" required>
+                    <option value="1_4_Kia_stinger_1944">R1</option>
+                    <option value="1_2_Kia_sorento_1675">R2</option>
+                    <option value="1_9_Kia_stonic_2629">R3</option>
+                    <option value="3_1_Renault_Twingo_4491">R4</option>
+                    <option value="3_0_Renault_grandscenic_4372">R5</option>
+                    <option value="3_5_Renault_clio_5101">R6</option>
+                    <option value="5_0_Mercedes_ClasseCLS_7059">R7</option>
+                    <option value="5_3_Mercedes_classeC_7403">R8</option>
+                    <option value="5_8_Mercedes_CLA_7992">R9</option>
+                    <option value="7_0_Peugeot_508break_9642">R10</option>
+                    <option value="7_3_Peugeot_Rifter_10091">R11</option>
+                    <option value="7_6_Peugeot_3008_10530">R12</option>
+                    <option value="9_0_Audi_A6_12288">R13</option>
+                    <option value="9_3_Audi_Q7_12722">R14</option>
+                    <option value="9_4_Audi_A1_12833">R15</option>
+                </select>
+
+                <button type='submit' name="affichage">Afficher</button>
+            </form>
+
+            {% if config['image_url'] %}
+                <img src="{{ config['image_url'] }}" height="200">
+            {%endif%}
+
+            <br>
+
+            <form method="POST" action="/">
+                <button type='submit' name="indexation">Indexer l'image</button>
+            </form>
+        </div>
+
+        <h2>Affichage des résultats</h2>
+
+        <button class='bouton' type='button' id='top50'>Affichage du top 50</button>
+        <div id="afftop50" class="affimages">
+        </div>
+        <br>
+
+
+        <button class="bouton" type='button' id='top100'>Affichage du top 100</button>
+        <div id="afftop100" class="affimages">
+        </div>
+        <br>
+
+        <button class='bouton' type="button" id="RP">Affichage des métriques</button>
+        <div id="affRP" class="affimages">
+        </div>
+        <br>
+
+    </form>
+
+
+
+
+    
+    <script>
+        // Déconnexion si page fermée
+        $(window).on('beforeunload', function() {
+            $.ajax({
+                url: "{{ url_for('logout') }}",
+                type: "GET",
+                async: false, // Important pour attendre la réponse avant la fermeture
+            });
+        });
+
+        // Ajout de listenner sur les cases à cocher pour gérer leur accès
+        document.addEventListener("DOMContentLoaded", function() {
+            toggleCheckboxes();
+            var checkboxes = document.querySelectorAll(".single");
+
+            // On lie le listenner à toutes les cases
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener("change", function() {
+                    toggleCheckboxes();
+                    toggleDistances();
+                });
+            });
+        });
+
+        function toggleCheckboxes() {
+            var mix = document.getElementById("mix").value;
+            var checkboxes = document.querySelectorAll(".single");
+            var checkedCount = 0;
+            var selectedCheckboxes = [];
+
+            checkboxes.forEach(function(checkbox) {
+                checkbox.disabled = false;
+
+                if (checkbox.checked) {
+                    checkedCount++;
+                    selectedCheckboxes.push(checkbox);
+                }
+            });
+
+            if (mix === "non" && checkedCount >= 1) {
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                });
+                selectedCheckboxes.slice(0, 1).forEach(function(checkbox) {
+                    checkbox.checked = true;
+                    checkbox.disabled = false;
+                });
+            }
+            else if (mix === "oui") {
+
+                checkboxes.forEach(function(checkbox) {
+                    if ((checkbox.name === "SIFT" || checkbox.name === "ORB")) {
+                        checkbox.disabled = true;
+                        checkbox.checked = false;
+                    }
+                })
+
+                if(checkedCount >= 2){
+                    checkboxes.forEach(function(checkbox) {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    });
+                    selectedCheckboxes.slice(0, 2).forEach(function(checkbox) {
+                        checkbox.checked = true;
+                        checkbox.disabled = false;
+                    });
+                }
+            }
+        }
+
+        function toggleDistances() {
+            var distanceSelect = document.getElementById("distanceSelect");
+            var siftOrbSelected = false;
+
+            // Vérifie si SIFT ou ORB est sélectionné
+            document.querySelectorAll(".single").forEach(function(checkbox) {
+                if (checkbox.checked && (checkbox.name === "SIFT" || checkbox.name === "ORB")) {
+                    siftOrbSelected = true;
+                }
+            });
+
+            if (siftOrbSelected) {
+                distanceSelect.innerHTML = '<option value="Brute_force">Brute-force</option>';
+                distanceSelect.innerHTML += '<option value="Flann">Flann</option>';
+
+            }
+            else {
+                distanceSelect.innerHTML = '<option value="Euclidienne">Euclidienne</option>';
+                distanceSelect.innerHTML += '<option value="Correlation">Correlation</option>';
+                distanceSelect.innerHTML += '<option value="Chi_Carre">Chi carré</option>';
+                distanceSelect.innerHTML += '<option value="Intersection">Intersection</option>';
+                distanceSelect.innerHTML += '<option value="Bhattacharyya">Bhattacharyya</option>';
+            }
+        }
+        
+        // Récupère les 50 images les + proches si on clique sur le bouton
+        $(document).ready(function () {
+            $('#top50').click(function () {
+                $.ajax({
+                    url: "{{ url_for ('get_top50') }}",
+                    type: "GET",
+                    success: function (response) {
+                        console.log('SUCCES');
+                        console.log(response);
+                        $('#afftop50').empty();
+                        $('#afftop100').empty();
+                        $.each(response, function (index, rawImageData) {
+                            $('#afftop50').append('<img src="' + rawImageData + '" height="200" />');
+                        });
+                    },
+                    error: function (xhr) {
+                        console.log('ERROR');
+                        console.log(xhr.responseText);
+                    }
+                });
+            }); 
+            
+            // Récupère les 100 images les + proches si on clique sur le bouton
+            $('#top100').click(function () {
+                $.ajax({
+                    url: "{{ url_for ('get_top100') }}",
+                    type: "GET",
+                    success: function (response) {
+                        console.log('SUCCES');
+                        console.log(response);
+                        $('#afftop50').empty();
+                        $('#afftop100').empty();
+                        $.each(response, function (index, rawImageData) {
+                            $('#afftop50').append('<img src="' + rawImageData + '" height="200" />');
+                        });
+                    },
+                    error: function (xhr) {
+                        console.log('ERROR');
+                        console.log(xhr.responseText);
+                    }
+                });
+            });    
+        });
+        
+        // Récupère les métriques si on clique sur le bouton
+        $(document).ready(function () {
+            console.log("jQuery est prêt !");
+            $('#RP').click(function () {
+                $.ajax({
+                    url: "{{ url_for ('get_RP') }}",
+                    type: "GET",
+                    success: function (response) {
+                    console.log('SUCCES');
+                    console.log(response);
+                    $('#affRP').empty();
+                    $.each(response, function (index, rawImageData) {
+                        $('#affRP').append('<img src="' + rawImageData + '" height="400" />');
+                    });
+                    },
+                    error: function (xhr) {
+                    console.log('ERROR');
+                    console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
+
+    </script>
+
+</body>
+</html>
