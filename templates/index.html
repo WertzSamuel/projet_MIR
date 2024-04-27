@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/script.js"></script>
 
     <meta charset="UTF-8">
     <title>Moteur de recherche</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
+    <!-- On se prépare à recevoir des messages flash -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -19,6 +21,7 @@
 
     <h2>Sélection des options de recherche </h2>
 
+    <!-- Liste déroulante pour concaténation -->
     <form method="post">
         <div class="input-group">
             <label for="mix">Concaténation :</label>
@@ -28,10 +31,12 @@
             </select>
         </div>
 
+        <!-- Bouton de déconnexion -->
         {% if session.logged_in %}
             <a href="{{ url_for('logout') }}" class="logout-link">Déconnexion</a>
         {% endif %}
 
+        <!-- Case à cocher pour les descripteurs -->
         <div class="input-group" id="checkboxes" aria-required="true">
             <label>Descripteur(s) :</label><br>
             
@@ -64,6 +69,7 @@
 
         </div>
 
+        <!-- Liste déroulante pour la distance -->
         <div class="input-group" id="distances">
             <label>Distances :</label><br>
 
@@ -86,6 +92,7 @@
 
         <h2>Choix de l'image de requête</h2>
         
+        <!-- Liste déroulante pour l'image requête -->
         <div class="input-group" id="imagerequete"></div>
             <form method="POST" action="/">
                 <select name="imageSelect" id="imageSelect"  class="distance-option" required>
@@ -122,192 +129,70 @@
 
         <h2>Affichage des résultats</h2>
 
+        <!-- Boutons pour afficher les images et la courbe RP -->
         <button class='bouton' type='button' id='top50'>Affichage du top 50</button>
-        <div id="afftop50" class="affimages">
-        </div>
-        <br>
-
-
+        <br></br>
         <button class="bouton" type='button' id='top100'>Affichage du top 100</button>
-        <div id="afftop100" class="affimages">
-        </div>
+        <br></br>
+        <div id="conteneur_images"></div>
+
+        <button class='bouton' type="button" id="RP">Affichage courbe RP</button>
+        <div id="conteneur_RP"></div>
         <br>
 
-        <button class='bouton' type="button" id="RP">Affichage des métriques</button>
-        <div id="affRP" class="affimages">
+        <!-- Bouton et container pour afficher les temps de processing -->
+        <button id="showTimeTable">Tableau des temps</button>
+
+        <div id="timeContainer" style="display: none;">
+            <table border="1" id="timeTable">
+                <thead>
+                    <tr>
+                        <th> Descripteur </th>
+                        <th> Temps d'indexation (s) </th>
+                        <th> Temps de recherche (s) </th>
+                        <th> Temps de recherche moyen par image (s) </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
-        <br>
+
+        <br></br>
+
+        <!-- Bouton et container pour afficher les métriques précises -->
+        <button id="showMetricTable">Affichage des métriques</button>
+
+        <div id="metricContainer" style="display: none;">
+            <table border="1" id="metricTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Requête</th>
+                        <th colspan="2">R</th>
+                        <th colspan="2">P</th>
+                        <th colspan="2">AP</th>
+                    </tr>
+                    <tr>
+                        <th>Top 50</th>
+                        <th>Top 100</th>
+                        <th>Top 50</th>
+                        <th>Top 100</th>
+                        <th>Top 50</th>
+                        <th>Top 100</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <br></br>
+
+        <div id="MAP50"></div>
+        
+        <div id="MAP100"></div>
 
     </form>
-
-
-
-
-    
-    <script>
-        // Déconnexion si page fermée
-        $(window).on('beforeunload', function() {
-            $.ajax({
-                url: "{{ url_for('logout') }}",
-                type: "GET",
-                async: false, // Important pour attendre la réponse avant la fermeture
-            });
-        });
-
-        // Ajout de listenner sur les cases à cocher pour gérer leur accès
-        document.addEventListener("DOMContentLoaded", function() {
-            toggleCheckboxes();
-            var checkboxes = document.querySelectorAll(".single");
-
-            // On lie le listenner à toutes les cases
-            checkboxes.forEach(function(checkbox) {
-                checkbox.addEventListener("change", function() {
-                    toggleCheckboxes();
-                    toggleDistances();
-                });
-            });
-        });
-
-        function toggleCheckboxes() {
-            var mix = document.getElementById("mix").value;
-            var checkboxes = document.querySelectorAll(".single");
-            var checkedCount = 0;
-            var selectedCheckboxes = [];
-
-            checkboxes.forEach(function(checkbox) {
-                checkbox.disabled = false;
-
-                if (checkbox.checked) {
-                    checkedCount++;
-                    selectedCheckboxes.push(checkbox);
-                }
-            });
-
-            if (mix === "non" && checkedCount >= 1) {
-                checkboxes.forEach(function(checkbox) {
-                    checkbox.checked = false;
-                    checkbox.disabled = true;
-                });
-                selectedCheckboxes.slice(0, 1).forEach(function(checkbox) {
-                    checkbox.checked = true;
-                    checkbox.disabled = false;
-                });
-            }
-            else if (mix === "oui") {
-
-                checkboxes.forEach(function(checkbox) {
-                    if ((checkbox.name === "SIFT" || checkbox.name === "ORB")) {
-                        checkbox.disabled = true;
-                        checkbox.checked = false;
-                    }
-                })
-
-                if(checkedCount >= 2){
-                    checkboxes.forEach(function(checkbox) {
-                        checkbox.checked = false;
-                        checkbox.disabled = true;
-                    });
-                    selectedCheckboxes.slice(0, 2).forEach(function(checkbox) {
-                        checkbox.checked = true;
-                        checkbox.disabled = false;
-                    });
-                }
-            }
-        }
-
-        function toggleDistances() {
-            var distanceSelect = document.getElementById("distanceSelect");
-            var siftOrbSelected = false;
-
-            // Vérifie si SIFT ou ORB est sélectionné
-            document.querySelectorAll(".single").forEach(function(checkbox) {
-                if (checkbox.checked && (checkbox.name === "SIFT" || checkbox.name === "ORB")) {
-                    siftOrbSelected = true;
-                }
-            });
-
-            if (siftOrbSelected) {
-                distanceSelect.innerHTML = '<option value="Brute_force">Brute-force</option>';
-                distanceSelect.innerHTML += '<option value="Flann">Flann</option>';
-
-            }
-            else {
-                distanceSelect.innerHTML = '<option value="Euclidienne">Euclidienne</option>';
-                distanceSelect.innerHTML += '<option value="Correlation">Correlation</option>';
-                distanceSelect.innerHTML += '<option value="Chi_Carre">Chi carré</option>';
-                distanceSelect.innerHTML += '<option value="Intersection">Intersection</option>';
-                distanceSelect.innerHTML += '<option value="Bhattacharyya">Bhattacharyya</option>';
-            }
-        }
-        
-        // Récupère les 50 images les + proches si on clique sur le bouton
-        $(document).ready(function () {
-            $('#top50').click(function () {
-                $.ajax({
-                    url: "{{ url_for ('get_top50') }}",
-                    type: "GET",
-                    success: function (response) {
-                        console.log('SUCCES');
-                        console.log(response);
-                        $('#afftop50').empty();
-                        $('#afftop100').empty();
-                        $.each(response, function (index, rawImageData) {
-                            $('#afftop50').append('<img src="' + rawImageData + '" height="200" />');
-                        });
-                    },
-                    error: function (xhr) {
-                        console.log('ERROR');
-                        console.log(xhr.responseText);
-                    }
-                });
-            }); 
-            
-            // Récupère les 100 images les + proches si on clique sur le bouton
-            $('#top100').click(function () {
-                $.ajax({
-                    url: "{{ url_for ('get_top100') }}",
-                    type: "GET",
-                    success: function (response) {
-                        console.log('SUCCES');
-                        console.log(response);
-                        $('#afftop50').empty();
-                        $('#afftop100').empty();
-                        $.each(response, function (index, rawImageData) {
-                            $('#afftop50').append('<img src="' + rawImageData + '" height="200" />');
-                        });
-                    },
-                    error: function (xhr) {
-                        console.log('ERROR');
-                        console.log(xhr.responseText);
-                    }
-                });
-            });    
-        });
-        
-        // Récupère les métriques si on clique sur le bouton
-        $(document).ready(function () {
-            console.log("jQuery est prêt !");
-            $('#RP').click(function () {
-                $.ajax({
-                    url: "{{ url_for ('get_RP') }}",
-                    type: "GET",
-                    success: function (response) {
-                    console.log('SUCCES');
-                    console.log(response);
-                    $('#affRP').empty();
-                    $.each(response, function (index, rawImageData) {
-                        $('#affRP').append('<img src="' + rawImageData + '" height="400" />');
-                    });
-                    },
-                    error: function (xhr) {
-                    console.log('ERROR');
-                    console.log(xhr.responseText);
-                    }
-                });
-            });
-        });
-
-    </script>
 
 </body>
 </html>

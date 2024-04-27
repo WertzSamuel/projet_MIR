@@ -9,6 +9,7 @@ from skimage import exposure
 from skimage import io, color, img_as_ubyte
 from matplotlib import pyplot as plt
 from skimage.feature import hog, greycomatrix, greycoprops, local_binary_pattern
+import json
 
 def showDialog():
     msgBox = QMessageBox()
@@ -162,65 +163,47 @@ def generateHOG(filenames, progressBar):
     print("indexation HOG terminée !!!!")
 
 
-def concatenate(filenames, models,folders, progressbar):
-    algo_choix1=''
-    algo_choix2=''
-    nom=''
-    folder_name1=''
-    folder_name2=''
+def concatenation(filenames, folders, descripteurs):
+    algo_choix1 = 0
+    algo_choix2 = 0
+    for k, desc in enumerate(descripteurs):
+        if descripteurs[desc] == 'on' and algo_choix1 == 0:
+            algo_choix1 = k+1
+        elif descripteurs[desc] == 'on':
+            algo_choix2 = k+1
+
     pas=0
     feat=[] 
-    algo_choix1 =models[0]
     folder_model1 = folders[0]
-    algo_choix2 = models[1]
     folder_model2 = folders[1]
     _,nom1 = folder_model1.split('/')
     _,nom2 = folder_model2.split('/')
-    folder_name=nom1+"_"+nom2
-    if not os.path.isdir(folder_name):
-        os.mkdir(folder_name)
-        features=''
-        data=''
-        feature=''
+    folder_name = "static/" + nom1.rstrip(".json") + "_" + nom2
+    print(folder_name)
+    if not os.path.exists(folder_name):
         featureTOT=''
-        for j in os.listdir(str(folder_model1)):
-            data1=os.path.join(folder_model1,j)
-            data2=os.path.join(folder_model2,j)
-            feature1 = np.loadtxt(data1)
-            feature2 = np.loadtxt(data2)
-            if(algo_choix1 == 1 or algo_choix1 == 2):
-                feature1 = feature1.ravel()
-            if(algo_choix2 == 1 or algo_choix2 == 2):
-                feature2 = feature2.ravel()
-            featureTOT = np.concatenate([feature1,feature2])
-            feat.append((os.path.join(filenames,os.path.basename(data1).split('.')[0]+'.jpg'),featureTOT))
-            pas += 1
-            progressbar.setValue(int(100*((pas+1)/10000))) 
-        saveFeaturesToFiles(feat, folder_name, progressbar)
+
+        with open(folder_model1, "r") as fichier:
+            feature1 = json.load(fichier)
+        with open(folder_model2, "r") as fichier:
+            feature2 = json.load(fichier)
+        '''
+        if(algo_choix1 == 1 or algo_choix1 == 2):
+            feature1 = list( np.matrix(feature1).ravel() )
+        if(algo_choix2 == 1 or algo_choix2 == 2):
+            feature2 = list( np.matrix(feature2).ravel() )
+        '''
+        for i in range(len(feature1)): 
+            featureTOT = np.concatenate([feature1[i][1], feature2[i][1]])
+            feat.append((feature1[i][0] ,list(featureTOT)))
+
+        with open(folder_name, "w") as fichier:
+            json.dump(feat, fichier)
+
     return folder_name
 
 
-def saveFeaturesToFiles(features, folderName, progressBar):
-    if not os.path.exists(folderName):
-        os.makedirs(folderName)
-    i=1
-    progressBar.setValue(0)
-    print(len(features))
-    for name,feature in features:
-        print(i,"Writing",name)
-        _, numero = name.split('/')
-        num_unique = numero.split('.')[0]
-        print(num_unique)
-        np.savetxt(folderName+"/"+num_unique+".txt",feature)
-        i+=1
-        progressBar.setValue(100*((i+1)/len(features)))
-
-
-def extractReqFeatures(fileName, descripteurs):  
-    algo_choice = 0
-    for k, desc in enumerate(descripteurs):
-        if descripteurs[desc] == 'on':
-            algo_choice = k+1
+def extractReqFeatures(fileName, algo_choice):  
 
     if fileName : 
         img = cv2.imread(fileName)
@@ -290,7 +273,7 @@ def extractReqFeatures(fileName, descripteurs):
             hog = cv2.HOGDescriptor(winSize,blockSize,blockStride,cellSize,nBins)
             vect_features = hog.compute(image)
 			
-        np.savetxt("Methode_"+str(algo_choice)+"_requete.txt" ,vect_features)
+        # np.savetxt("Methode_"+str(algo_choice)+"_requete.txt" ,vect_features)
         print("saved")
         #print("vect_features", vect_features)
         return vect_features
