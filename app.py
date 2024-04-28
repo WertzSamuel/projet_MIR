@@ -11,7 +11,7 @@ from skimage.io import imread
 from skimage.feature import hog
 from skimage import exposure
 from matplotlib import pyplot as plt
-from functions import extractReqFeatures, showDialog, concatenation
+from functions import extractReqFeatures, concatenation
 from distances import *
 import time
 import hashlib
@@ -187,28 +187,22 @@ def Recherche(concatenate, desc, dist, sortie):
 
     ##Generer les features de l'images requete
     if concatenate == 'oui':
-        algo_choix1 = 0
-        algo_choix2 = 0
-        for k, desc in enumerate(descripteurs):
-            if descripteurs[desc] == 'on' and algo_choix1 == 0:
-                algo_choix1 = k+1
+        algo_choice1 = None
+        algo_choice2 = None
+        for desc in descripteurs:
+            if descripteurs[desc] == 'on' and not algo_choice1:
+                algo_choice1 = desc
             elif descripteurs[desc] == 'on':
-                algo_choix2 = k+1
-        req1 = extractReqFeatures(fileName, algo_choix1)
-        req2 = extractReqFeatures(fileName, algo_choix2)
-        '''
-        if(algo_choix1 == 1 or algo_choix1 == 2):
-            req1 = req1.ravel()
-        if(algo_choix2 == 1 or algo_choix2 == 2):
-            req2 = req2.ravel()
-        '''
+                algo_choice2 = desc
+        req1 = extractReqFeatures(fileName, algo_choice1)
+        req2 = extractReqFeatures(fileName, algo_choice2)
         req =  np.concatenate([req1,req2])
     
     else:
-        algo_choice = 0
-        for k, desc in enumerate(descripteurs):
+        for desc in descripteurs:
             if descripteurs[desc] == 'on':
-                algo_choice = k+1
+                algo_choice = desc
+                break
         req = extractReqFeatures(fileName, algo_choice)
 
     #Générer les voisins
