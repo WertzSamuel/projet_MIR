@@ -77,11 +77,11 @@ def distance_f(l1,l2,distanceName):
 
 def getkVoisins(lfeatures, req, k, distanceName) : 
     ldistances = [] 
-    for i in range(len(lfeatures)): 
-        if 'static' not in lfeatures[i][0]:
-            lfeatures[i][0] = 'static/dataset/' + lfeatures[i][0].lstrip('dataset\\')
-        dist = distance_f(req, lfeatures[i][1],distanceName)
-        ldistances.append((lfeatures[i][0], lfeatures[i][1], dist)) 
+    for key in lfeatures: 
+        #if 'static' not in lfeatures[i][0]:
+        #    lfeatures[i][0] = 'static/dataset/' + lfeatures[i][0].lstrip('dataset\\')
+        dist = distance_f(req, lfeatures[key],distanceName)
+        ldistances.append((key, lfeatures[key], dist)) 
     if distanceName in ["Correlation","Intersection"]:
         ordre=True
     else:

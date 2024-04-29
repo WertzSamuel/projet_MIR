@@ -99,13 +99,13 @@ def generate_HOG(img):
 
 
 def concatenation(filenames, folders, descripteurs):
-    algo_choix1 = 0
-    algo_choix2 = 0
-    for k, desc in enumerate(descripteurs):
-        if descripteurs[desc] == 'on' and algo_choix1 == 0:
-            algo_choix1 = k+1
+    algo_choix1 = None
+    algo_choix2 = None
+    for desc in descripteurs:
+        if descripteurs[desc] == 'on' and not algo_choix1:
+            algo_choix1 = desc
         elif descripteurs[desc] == 'on':
-            algo_choix2 = k+1
+            algo_choix2 = desc
 
     pas=0
     feat=[] 
@@ -116,31 +116,34 @@ def concatenation(filenames, folders, descripteurs):
     folder_name = "static/" + nom1.rstrip(".json") + "_" + nom2
     print(folder_name)
     if not os.path.exists(folder_name):
-        featureTOT=''
 
         with open(folder_model1, "r") as fichier:
             feature1 = json.load(fichier)
         with open(folder_model2, "r") as fichier:
             feature2 = json.load(fichier)
-        '''
-        if(algo_choix1 == 1 or algo_choix1 == 2):
-            feature1 = list( np.matrix(feature1).ravel() )
-        if(algo_choix2 == 1 or algo_choix2 == 2):
-            feature2 = list( np.matrix(feature2).ravel() )
-        '''
-        for i in range(len(feature1)): 
-            featureTOT = np.concatenate([feature1[i][1], feature2[i][1]])
-            feat.append((feature1[i][0] ,list(featureTOT)))
+        
+        features = {}
+        for k in feature1:
+            features[k] = list(np.concatenate([feature1[k], feature2[k]]))
 
         with open(folder_name, "w") as fichier:
-            json.dump(feat, fichier)
+            json.dump(features, fichier)
 
     return folder_name
 
 
-def extractReqFeatures(fileName, algo_choice):  
+def search_feature(filename, features):
+    image_name = os.path.basename(filename).rstrip('.jpg')
+    return features[image_name]
+
+
+def extractReqFeatures(fileName, algo_choice, features):  
 
     if fileName : 
+
+        if features:
+            return search_feature(fileName, features)
+        
         img = cv2.imread(fileName)
         resized_img = resize(img, (128*4, 64*4))
             

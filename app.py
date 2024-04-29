@@ -102,7 +102,16 @@ def update_descripteur_config(form):
         'hog': form.get('HOG'),
         'lbp': form.get('LBP'),
         'VGG16': form.get('VGG16'),
+        'VGG16_2': form.get('VGG16_2'),
+        'VGG19': form.get('VGG19'),
+        'VGG19_2': form.get('VGG19_2'),
+        'ResNet50': form.get('ResNet50'),
+        'ResNet50_2': form.get('ResNet50_2'),
         'Xception': form.get('Xception'),     
+        'Xception_2': form.get('Xception_2'),     
+        'InceptionV3': form.get('InceptionV3'),     
+        'InceptionV3_2': form.get('InceptionV3_2'), 
+
     }
 
 def is_descripteur_selected():
@@ -181,11 +190,13 @@ def Recherche(concatenate, desc, dist, sortie):
     t1 = time.time()
     fileName = config['image_url']
     descripteurs = config['descripteur']
+    features = config['features']
 
     #Remise à 0 de la grille des voisins 
     voisins=""
 
     ##Generer les features de l'images requete
+    """
     if concatenate == 'oui':
         algo_choice1 = None
         algo_choice2 = None
@@ -199,19 +210,20 @@ def Recherche(concatenate, desc, dist, sortie):
         req =  np.concatenate([req1,req2])
     
     else:
-        for desc in descripteurs:
-            if descripteurs[desc] == 'on':
-                algo_choice = desc
-                break
-        req = extractReqFeatures(fileName, algo_choice)
+    """
+    for desc in descripteurs:
+        if descripteurs[desc] == 'on':
+            algo_choice = desc
+            break
+    req = extractReqFeatures(fileName, algo_choice, features)
 
     #Générer les voisins
     voisins=getkVoisins(config['features'], req, sortie, dist)
     path_image_plus_proches = []
     nom_image_plus_proches = []
     for k in range(sortie):
-        path_image_plus_proches.append(voisins[k][0])
-        nom_image_plus_proches.append(os.path.basename(voisins[k][0]))
+        path_image_plus_proches.append("static/dataset/"+voisins[k][0]+".jpg")
+        nom_image_plus_proches.append(voisins[k][0])
 
     t2 = time.time()
     search_time = t2-t1
