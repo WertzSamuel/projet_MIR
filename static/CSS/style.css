@@ -1,7 +1,9 @@
+
+
 /****** Background color *******/
 /*********** Dark **************/
 .fond.theme{
-  background-color:rgb(0, 0, 0) ;
+  background-color:rgb(41, 42, 59) ;
 }
 .fond-sec.theme {
   background-color:#232629 ;
@@ -14,7 +16,7 @@
 }
 /*********** Light **************/
 .fond.theme.light{
-  background-color:rgb(238, 220, 202) ;
+  background-color:whitesmoke;
 }
 .fond-sec.theme.light {
   background-color:#c7b299 ;
@@ -75,7 +77,7 @@ a.nav-link.active.texte-color.theme.light{
 /******** Navbar bg ********/
 /********** Dark **********/
 .navbar-scrolled.theme {
-  background-color: #BA6436;
+  background-color: #3660ba;
   /*background-color:rgba(34, 32, 30, 1) ;*/
   box-shadow: 0 3px 10px rgba(255, 255, 255, 0.5);
 }
@@ -85,7 +87,7 @@ a.nav-link.active.texte-color.theme.light{
 }
 /********** Light **********/
 .navbar-scrolled.theme.light {
-  background-color: rgb(221, 186, 162);
+  background-color:  #4872cc;
   /*background-color: #BA6436;*/
   box-shadow: 0 3px 10px rgba(0, 0,0, 0.5);
 }

@@ -98,81 +98,75 @@ function toggleDistances() {
     }
 }
 
-
+// Charge l'image requête
 function loadImageRequest(){
     var image_selected = $("#imageSelect").val();
     var image_path = "/static/images_requêtes/" + image_selected + ".jpg"
     $("#image_requete").attr("src",image_path);
 }
 
+// Récupère les images les + proches
+function get_top() {
+    $.get('/get_top', function(data){
+        var images_html = '';
+        data.forEach(function(image){
+            images_html += '<img class="image px-2 py-2" src="' + image + '" alt="Image" style="width:20%">';
+        });
+        $("#conteneur_images").html(images_html);
+    });
+}
+
+// Récupère le graphe RP
+function get_RP(){
+    $.get('/get_RP', function(data){
+        var images_html = '';
+        data.forEach(function(image){
+            images_html += '<img  src="' + image + '" alt="Image" width="600" height="450">';
+            $("#conteneur_RP").show();
+        });
+        $("#conteneur_RP").html(images_html);
+        
+    });
+}
+
+// Récupère les temps d'exécution
+function get_time() {
+    $.get('/get_time_data', function(data){
+        $('#timeTable tbody').empty();
+        $.each(data, function(index, item){
+            $('#timeTable tbody').append('<tr><td>' + item.Descripteur + '</td><td>' + item.Indexation + '</td><td>' + item.Recherche + '</td><td>' + item.Moyen + '</td></tr>');
+        });
+        $('#timeContainer').show();
+    });
+}
+
+// Affiche le tableau des métriques
+function get_metrics() {
+    $.get('/get_metric_data', function(data){
+        $('#metricTable tbody').empty();
+        $.each(data, function(index, item){
+            $('#metricTable tbody').append('<tr><td>' + item.Requete + '</td><td>' + item.R50 + '</td><td>' + item.R100 + '</td><td>' + item.P50 + '</td><td>' + item.P100 + '</td><td>' + item.AP50 + '</td><td>' + item.AP100  + '</td></tr>');
+        });
+        $('#metricContainer').show();
+    })
+    $.get('/get_moy', function(moy){
+        var contenuElement = document.getElementById("MAP50");
+        contenuElement.textContent = "MaP top 50 : " + moy[0];
+        var contenuElement = document.getElementById("MAP100");
+        contenuElement.textContent = "MaP top 100 : " + moy[1];
+    });
+}
+
 $(document).ready(function(){
 
-    
-
-    loadImageRequest();
 
     $("#imageSelect").change( function( event ) {
         loadImageRequest();
       });
 
-    // Récupère les 50 images les + proches si on clique sur le bouton
-    $("#top50").click(function(){
-        $.get('/get_top50', function(data){
-            var images_html = '';
-            data.forEach(function(image){
-                images_html += '<img class="image" src="' + image + '" alt="Image">';
-            });
-            $("#conteneur_images").html(images_html);
-        });
-    });
-
-    // Récupère les 100 images les + proches si on clique sur le bouton
-    $("#top100").click(function(){
-        $.get('/get_top100', function(data){
-            var images_html = '';
-            data.forEach(function(image){
-                images_html += '<img class="image" src="' + image + '" alt="Image">';
-            });
-            $("#conteneur_images").html(images_html);
-        });
-    });
-    
-    // Récupère les métriques si on clique sur le bouton
-    $("#RP").click(function(){
-        $.get('/get_RP', function(data){
-            var images_html = '';
-            data.forEach(function(image){
-                images_html += '<img  src="' + image + '" alt="Image" width="600" height="450">';
-            });
-            $("#conteneur_RP").html(images_html);
-        });
-    });
-
-    // Affiche le tableau des temps
-    $("#showTimeTable").click(function(){
-        $.get('/get_time_data', function(data){
-            $('#timeTable tbody').empty();
-            $.each(data, function(index, item){
-                $('#timeTable tbody').append('<tr><td>' + item.Descripteur + '</td><td>' + item.Indexation + '</td><td>' + item.Recherche + '</td><td>' + item.Moyen + '</td></tr>');
-            });
-            $('#timeContainer').show();
-        });
-    });
-
-    // Affiche le tableau des métriques
-    $("#showMetricTable").click(function(){
-        $.get('/get_metric_data', function(data){
-            $('#metricTable tbody').empty();
-            $.each(data, function(index, item){
-                $('#metricTable tbody').append('<tr><td>' + item.Requete + '</td><td>' + item.R50 + '</td><td>' + item.R100 + '</td><td>' + item.P50 + '</td><td>' + item.P100 + '</td><td>' + item.AP50 + '</td><td>' + item.AP100  + '</td></tr>');
-            });
-            $('#metricContainer').show();
-        })
-        $.get('/get_moy', function(moy){
-            var contenuElement = document.getElementById("MAP50");
-            contenuElement.textContent = "MaP top 50 : " + moy[0];
-            var contenuElement = document.getElementById("MAP100");
-            contenuElement.textContent = "MaP top 100 : " + moy[1];
-        });
-    });
+    loadImageRequest();    
+    get_top();
+    get_RP(); 
+    get_time();
+    get_metrics();
 });

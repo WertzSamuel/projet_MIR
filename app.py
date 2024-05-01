@@ -43,14 +43,18 @@ def index():
     if not session.get('logged_in'):
         return render_template('login.html')
     
-    if request.method == "POST" and "confirmation" in request.form:
+    if request.method == "POST" and "recherche" in request.form:
+
+        session['indexation_done'] = False
+        #Choix des descripteurs et de la distance
         config['descripteur'] = dict()
 
         config['concatenate'] = request.form.get("mix")
         config['distance'] = request.form.get("distance")
+        config['top'] = int(request.form.get("top"))
         update_descripteur_config(request.form)
         if not is_descripteur_selected():
-            flash('Pas de descripteur sélectionné', 'params')
+            flash('Pas de descripteur sélectionné', 'danger')
             return redirect(request.url)
         
         for desc in config['descripteur']:
@@ -59,33 +63,29 @@ def index():
                 config['to_concatenate'].append(folder_model)
 
         config['features'] = loadFeatures(config['concatenate'], folder_model)
-        flash('chargement des descripteurs terminé')  
 
         session['descripteur_selected'] = True
 
-        return redirect('/')
-        
-    if request.method == "POST" and "affichage" in request.form:
-
+        # Choix de l'image
         name = request.form.get('imageSelect')
         config['image_url'] = "static/images_requêtes/" + name +".jpg"
 
         session['image_selected'] = True
 
-        return redirect('/')
+        # Recherche de l'image
 
-    if request.method == "POST" and "indexation" in request.form:
         # On vérifie que les descripteurs ont bien été chargés
         if not session.get('descripteur_selected'):
             flash("Veuillez confirmer vos options de recherches d'abord")
         elif not session.get('image_selected'):
             flash("Veuillez choisir une image d'abord")
         else:
-            concatenate = request.form.get("mix")
-            config['images_proches'], noms_proches = Recherche(config['concatenate'], config['descripteur'], config['distance'], 100)
-            config['RP'] = [rappel_precision(100, noms_proches)]
-
             session['indexation_done'] = True
+            concatenate = request.form.get("mix")
+            config['images_proches'], noms_proches = Recherche(config['concatenate'], config['descripteur'], config['distance'], config['top'])
+            config['RP'] = [rappel_precision(config['top'], noms_proches)]
+            
+            flash('Recherche terminé', 'success')  
 
             return redirect('/')
 
@@ -231,22 +231,12 @@ def Recherche(concatenate, desc, dist, sortie):
     
     return path_image_plus_proches, nom_image_plus_proches
 
-@app.route("/get_top50")
-def get_top50():
-    if not session.get('indexation_done'):
-        flash("Veuillez effectuer la recherche en indexant l'image d'abord")
-    else:
-        images = config['images_proches'][:50]
+@app.route("/get_top")
+def get_top():
+    if session.get('indexation_done'):
+        images = config['images_proches'][:config['top']]
         return jsonify(images)
-
-
-@app.route("/get_top100")
-def get_top100():
-    if not session.get('indexation_done'):
-        flash("Veuillez effectuer la recherche en indexant l'image d'abord")
-    else:
-        images = config['images_proches'][:100]
-        return jsonify(images)
+    
 
 
 def rappel_precision(sortie, nom_image_plus_proches):
@@ -304,16 +294,16 @@ def rappel_precision(sortie, nom_image_plus_proches):
                 "9_4_Audi_A1_12833": 14}
     req = requete[fileName.lstrip("static/images_requêtes/").rstrip(".jpg")]
 
-    config['metrics'][req][1] = rappels[49]
-    config['metrics'][req][3] = precisions[49]
-    config['metrics'][req][2] = rappels[99]
-    config['metrics'][req][4] = precisions[99]
+    config['metrics'][req][1] = rappels[(sortie//2)-1]
+    config['metrics'][req][3] = precisions[(sortie//2)-1]
+    config['metrics'][req][2] = rappels[(sortie)-1]
+    config['metrics'][req][4] = precisions[(sortie)-1]
 
     #Création de la courbe R/P
     plt.plot(rappels,precisions)
     plt.xlabel("Recall")
     plt.ylabel("Precision")
-    plt.title("R/P"+str(sortie)+" voisins de l'image n°"+num_image)
+    plt.title("R/P "+str(sortie)+" voisins de l'image n°"+num_image)
 
     average_P = 0
     deno = 0
@@ -342,7 +332,7 @@ def rappel_precision(sortie, nom_image_plus_proches):
 @app.route("/get_RP")
 def get_RP():
     if not session.get('indexation_done'):
-        flash("Veuillez effectuer la recherche en indexant l'image d'abord")
+        #flash("Veuillez effectuer la recherche en indexant l'image d'abord")
         return []
     else:
         return config['RP']
@@ -350,10 +340,7 @@ def get_RP():
 @app.route("/get_time_data")
 def get_time_data():
 
-    if not session.get('indexation_done'):
-        flash("Veuillez effectuer la recherche en indexant l'image d'abord")
-
-    else:
+    if session.get('indexation_done'):
         for d in config['descripteur']:
             if config['descripteur'][d] == 'on':
                 desc = d.upper()
@@ -368,10 +355,7 @@ def get_time_data():
 @app.route("/get_metric_data")
 def get_metric_data():
 
-    if not session.get('indexation_done'):
-        flash("Veuillez effectuer la recherche en indexant l'image d'abord")
-
-    else:
+    if session.get('indexation_done'):
         data = [
             {'Requete' : config['metrics'][i][0], 
             'R50': round(config['metrics'][i][1], 2), 
@@ -387,10 +371,7 @@ def get_metric_data():
 @app.route("/get_moy")
 def get_moy():
 
-    if not session.get('indexation_done'):
-        flash("Veuillez effectuer la recherche en indexant l'image d'abord")
-
-    else:
+    if session.get('indexation_done'):
         data = config['metrics']
        
         s_AP50, s_AP100, c = 0, 0, 0
