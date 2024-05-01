@@ -32,6 +32,22 @@ config['concatenate'] = ''
 config['time'] = [0]*3
 config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
 
+requete = {"1_4_Kia_stinger_1944": 0,
+            "1_2_Kia_sorento_1675": 1,
+            "1_9_Kia_stonic_2629": 2,
+            "3_1_Renault_Twingo_4491": 3,
+            "3_0_Renault_grandscenic_4372": 4,
+            "3_5_Renault_clio_5101": 5,
+            "5_0_Mercedes_ClasseCLS_7059": 6,
+            "5_3_Mercedes_classeC_7403": 7,
+            "5_8_Mercedes_CLA_7992": 8,
+            "7_0_Peugeot_508break_9642": 9,
+            "7_3_Peugeot_Rifter_10091": 10,
+            "7_6_Peugeot_3008_10530": 11,
+            "9_0_Audi_A6_12288": 12,
+            "9_3_Audi_Q7_12722": 13,
+            "9_4_Audi_A1_12833": 14}
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
 
@@ -66,25 +82,31 @@ def index():
 
         session['descripteur_selected'] = True
 
-        # Choix de l'image
-        name = request.form.get('imageSelect')
-        config['image_url'] = "static/images_requêtes/" + name +".jpg"
-
-        session['image_selected'] = True
-
-        # Recherche de l'image
-
         # On vérifie que les descripteurs ont bien été chargés
         if not session.get('descripteur_selected'):
             flash("Veuillez confirmer vos options de recherches d'abord")
-        elif not session.get('image_selected'):
-            flash("Veuillez choisir une image d'abord")
         else:
-            session['indexation_done'] = True
             concatenate = request.form.get("mix")
-            config['images_proches'], noms_proches = Recherche(config['concatenate'], config['descripteur'], config['distance'], config['top'])
-            config['RP'] = [rappel_precision(config['top'], noms_proches)]
-            
+            # Choix de l'image
+            name = request.form.get('imageSelect')
+            if name == "All_R":
+                for req in requete:
+
+                    config['image_url'] = "static/images_requêtes/" + req +".jpg"
+                    session['image_selected'] = True
+                    config['images_proches'], noms_proches = Recherche(config['concatenate'], config['descripteur'], config['distance'], config['top'])
+                    config['RP'] = [rappel_precision(config['top'], noms_proches)]
+                    session['indexation_done'] = True
+                    session['all'] = True
+
+            else:
+                config['image_url'] = "static/images_requêtes/" + name +".jpg"
+                session['image_selected'] = True
+                config['images_proches'], noms_proches = Recherche(config['concatenate'], config['descripteur'], config['distance'], config['top'])
+                config['RP'] = [rappel_precision(config['top'], noms_proches)]
+                session['indexation_done'] = True
+                session['all'] = False
+
             flash('Recherche terminé', 'success')  
 
             return redirect('/')
@@ -111,65 +133,15 @@ def update_descripteur_config(form):
         'Xception_2': form.get('Xception_2'),     
         'InceptionV3': form.get('InceptionV3'),     
         'InceptionV3_2': form.get('InceptionV3_2'), 
-
     }
 
 def is_descripteur_selected():
     descripteurs = config['descripteur']
     return any(value for value in descripteurs.values())
 
-@app.route('/login', methods=['POST'])
-def login():
-    salt = "gz42"
-    if request.method == 'POST' and 'register' in request.form:
-        return render_template('register.html')
-    if request.method == 'POST' and 'form_login' in request.form:
-        pwd = request.form.get('password') + salt
-        hash_pwd = hashlib.md5(pwd.encode())
-        collection = []
-        with open ("static/mdp.txt", "r") as fout:
-            for ligne in fout:
-                [name, pswd] = ligne.rstrip('\n').split(", ")
-                collection.append((name, pswd))
-        if (request.form.get('username'), hash_pwd.hexdigest()) in collection:
-            session['logged_in'] = True
-        else:
-            flash('Accès refusé, mauvais identifiants', 'login')
-    return redirect(url_for('index'))
-
-@app.route('/register', methods=['POST'])
-def register():
-    salt = "gz42"
-    if request.method == 'POST' and 'login' in request.form:
-        return render_template('login.html')
-    if request.method == 'POST' and 'form_register' in request.form:
-        pwd = request.form.get('password') + salt
-        if len(pwd) < 10:
-            flash('Mot de passe trop court, entrez au moins 6 caractères', 'register')
-            return render_template('register.html')
-        hash_pwd = hashlib.md5(pwd.encode())
-        collection = []
-        with open ("static/mdp.txt", "r") as fout:
-            for ligne in fout:
-                [name, _] = ligne.rstrip('\n').split(", ")
-                collection.append(name)
-        if request.form.get('username') in collection:
-            flash('Nom d\'utilisateur déjà utilisé', 'register')
-            return render_template('register.html')
-        else:
-            with open ("static/mdp.txt", "a") as fout:
-                fout.write(f"{request.form.get('username')}, {hash_pwd.hexdigest()}\n")
-            session['logged_in'] = True
-    return redirect(url_for('index'))
-
-@app.route("/logout")
-def logout():
-    session['logged_in'] = False
-    return index()
-
 def loadFeatures(concatenate, folder_model):
     t1 = time.time()
-    
+
     if concatenate:
         folder_model = concatenation('static/dataset', config['to_concatenate'], config['descripteur'])
         print(folder_model)
@@ -233,7 +205,7 @@ def Recherche(concatenate, desc, dist, sortie):
 
 @app.route("/get_top")
 def get_top():
-    if session.get('indexation_done'):
+    if session.get('indexation_done') and not session.get('all'):
         images = config['images_proches'][:config['top']]
         return jsonify(images)
     
@@ -272,26 +244,12 @@ def rappel_precision(sortie, nom_image_plus_proches):
             if rappel_precision[j]:
                 val+=1
             j-=1 
-        precision = val/(i+1) * 100
-        rappel = val/sortie * 100
+        precision = (val/(i+1)) * 100
+        rappel = (val/sortie) * 100
         rappels.append(rappel)
         precisions.append(precision)
 
-    requete = {"1_4_Kia_stinger_1944": 0,
-                "1_2_Kia_sorento_1675": 1,
-                "1_9_Kia_stonic_2629": 2,
-                "3_1_Renault_Twingo_4491": 3,
-                "3_0_Renault_grandscenic_4372": 4,
-                "3_5_Renault_clio_5101": 5,
-                "5_0_Mercedes_ClasseCLS_7059": 6,
-                "5_3_Mercedes_classeC_7403": 7,
-                "5_8_Mercedes_CLA_7992": 8,
-                "7_0_Peugeot_508break_9642": 9,
-                "7_3_Peugeot_Rifter_10091": 10,
-                "7_6_Peugeot_3008_10530": 11,
-                "9_0_Audi_A6_12288": 12,
-                "9_3_Audi_Q7_12722": 13,
-                "9_4_Audi_A1_12833": 14}
+    
     req = requete[fileName.lstrip("static/images_requêtes/").rstrip(".jpg")]
 
     config['metrics'][req][1] = rappels[(sortie//2)-1]
@@ -331,7 +289,7 @@ def rappel_precision(sortie, nom_image_plus_proches):
 
 @app.route("/get_RP")
 def get_RP():
-    if not session.get('indexation_done'):
+    if not session.get('indexation_done') or session.get('all'):
         #flash("Veuillez effectuer la recherche en indexant l'image d'abord")
         return []
     else:
@@ -340,7 +298,7 @@ def get_RP():
 @app.route("/get_time_data")
 def get_time_data():
 
-    if session.get('indexation_done'):
+    if session.get('indexation_done') and not session.get('all'):
         for d in config['descripteur']:
             if config['descripteur'][d] == 'on':
                 desc = d.upper()
@@ -384,6 +342,54 @@ def get_moy():
         moy = [str(round(s_AP50/c, 3)), str(round(s_AP100/c, 3))]
 
         return jsonify(moy)
+    
+
+@app.route('/login', methods=['POST'])
+def login():
+    salt = "gz42"
+    if request.method == 'POST' and 'form_login' in request.form:
+        pwd = request.form.get('password') + salt
+        hash_pwd = hashlib.md5(pwd.encode())
+        collection = []
+        with open ("static/mdp.txt", "r") as fout:
+            for ligne in fout:
+                [name, pswd] = ligne.rstrip('\n').split(", ")
+                collection.append((name, pswd))
+        if (request.form.get('username'), hash_pwd.hexdigest()) in collection:
+            session['logged_in'] = True
+        else:
+            flash('Accès refusé, mauvais identifiants', 'danger')
+    return redirect(url_for('index'))
+
+@app.route('/register', methods=['POST'])
+def register():
+    salt = "gz42"
+    if request.method == 'POST' and 'login' in request.form:
+        return render_template('login.html')
+    if request.method == 'POST' and 'form_register' in request.form:
+        pwd = request.form.get('password') + salt
+        if len(pwd) < 10:
+            flash('Mot de passe trop court, entrez au moins 6 caractères', 'danger')
+            return render_template('login.html')
+        hash_pwd = hashlib.md5(pwd.encode())
+        collection = []
+        with open ("static/mdp.txt", "r") as fout:
+            for ligne in fout:
+                [name, _] = ligne.rstrip('\n').split(", ")
+                collection.append(name)
+        if request.form.get('username') in collection:
+            flash('Nom d\'utilisateur déjà utilisé', 'danger')
+            return render_template('login.html')
+        else:
+            with open ("static/mdp.txt", "a") as fout:
+                fout.write(f"{request.form.get('username')}, {hash_pwd.hexdigest()}\n")
+            session['logged_in'] = True
+    return redirect(url_for('index'))
+
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return index()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

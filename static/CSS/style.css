@@ -3,10 +3,10 @@
 /****** Background color *******/
 /*********** Dark **************/
 .fond.theme{
-  background-color:rgb(41, 42, 59) ;
+  background: linear-gradient(to left, #0f0c29, #302b63, #24243e);
 }
 .fond-sec.theme {
-  background-color:#232629 ;
+  background-color:rgb(41, 42, 59) ;
 }
 .fond-ter.theme{
   background-color: #232629;
@@ -16,7 +16,7 @@
 }
 /*********** Light **************/
 .fond.theme.light{
-  background-color:whitesmoke;
+  background: linear-gradient(to left, #948af0, #c3befc, #9c9cfd);
 }
 .fond-sec.theme.light {
   background-color:#c7b299 ;
@@ -87,7 +87,7 @@ a.nav-link.active.texte-color.theme.light{
 }
 /********** Light **********/
 .navbar-scrolled.theme.light {
-  background-color:  #4872cc;
+  background-color:  #6a99ff;
   /*background-color: #BA6436;*/
   box-shadow: 0 3px 10px rgba(0, 0,0, 0.5);
 }
@@ -101,26 +101,6 @@ a.nav-link.active.texte-color.theme.light{
 }
 */
 
-/******** Menu Dot ********/
-ul.pa-dot-leaders {
-  max-width: 40em;
-  padding: 0;
-  overflow-x: hidden;
-  list-style: none}
-ul.pa-dot-leaders li:before {
-  float: left;
-  width: 0;
-  white-space: nowrap;
-  content:
-". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
-}
-ul.pa-dot-leaders  span:first-child {
-  padding-right: 0.33em;
-  background: white}
-ul.pa-dot-leaders span + span {
-  float: right;
-  padding-left: 0.33em;
-  background: white}
 
 /****** Main Navigation Bar ******/
 
@@ -137,55 +117,6 @@ a.nav-link.texte-color:hover{
   /*color:black;*/
   color: rgb(148, 148, 148);
 }
-
-/****** Carte Navigation Bar ******/
-
-.button-menu.active {
-  font-weight: bold;
-  color: white;
-  border-bottom: 3px solid #ffffff; 
-}
-.button-menu.active:hover {
-  border-bottom: 3px solid rgb(230, 230, 230); 
-}
-.button-menu:hover {
-  color: rgb(230, 230, 230);
-}
-.button-menu{
-  transition: 0.2s;
-}
-
-
-/******Police******/
-  .AsianH1 {
-  font-family: ChowFun;
-  font-weight: normal;
-}
-  .asian2 {
-  font-family: Wonton;
-  font-weight: normal;
-  color:#BA6436;
-  font-size : 14px;
-}
-.description_carte {
-  font-size: 14px;
-  font-weight : 400;
-}
-
-
-
-
-/****** Button Brown ******/
-.text-button-brown:hover {
-  color: white;
-}
-.button-brown{
-  background-color:rgba(199, 178, 153, 1) ;
-}
-  .button-brown:hover{
-  background-color:rgb(150, 136, 119) ;
-}
-
 
 /****** Images ******/
 .accueil {

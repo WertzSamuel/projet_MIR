@@ -101,8 +101,14 @@ function toggleDistances() {
 // Charge l'image requête
 function loadImageRequest(){
     var image_selected = $("#imageSelect").val();
-    var image_path = "/static/images_requêtes/" + image_selected + ".jpg"
-    $("#image_requete").attr("src",image_path);
+    if (image_selected != "All_R") {
+        var image_path = "/static/images_requêtes/" + image_selected + ".jpg"
+        $("#image_requete").attr("src",image_path);
+    }
+    else {
+        $("#image_requete").attr("src","");
+        $("#top").val("100");
+    }
 }
 
 // Récupère les images les + proches
