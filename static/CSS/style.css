@@ -1,0 +1,350 @@
+/****** Background color *******/
+/*********** Dark **************/
+.fond.theme{
+  background-color:rgb(0, 0, 0) ;
+}
+.fond-sec.theme {
+  background-color:#232629 ;
+}
+.fond-ter.theme{
+  background-color: #232629;
+}
+.flashCard.theme {
+  box-shadow: rgb(255, 255, 255) 0px 1px 10px;
+}
+/*********** Light **************/
+.fond.theme.light{
+  background-color:rgb(238, 220, 202) ;
+}
+.fond-sec.theme.light {
+  background-color:#c7b299 ;
+}
+.fond-ter.theme.light {
+  background-color:rgb(238, 220, 202) ;
+}
+.flashCard.light {
+  box-shadow: rgb(0, 0, 0) 0px 1px 10px;
+}
+
+/****** Texte color *******/
+/********** Dark **********/
+.texte-color.theme{
+  color: white;
+}
+a.nav-link.active.texte-color.theme{
+  color: white;
+}
+.icon.theme {
+  fill: black;
+}
+.svg-fill.theme {
+  filter: invert(100%) sepia(0%) saturate(7500%) hue-rotate(100deg) brightness(115%) contrast(106%);
+}
+.footerTitle.theme {
+  border-bottom: 2px solid #ffffff; 
+  /*border-bottom: 2px solid #000000;*/
+  padding-bottom: 5px
+} 
+/********** Light **********/
+.texte-color.theme.light{
+  color:black;
+}
+a.nav-link.active.texte-color.theme.light{
+  color: black;
+}
+.icon.theme.light {
+  /*fill: rgb(255, 230, 0);*/
+  fill:white;
+}
+.svg-fill.theme.light {
+  filter: invert(0%);
+}
+.btn.button-theme.light{
+  background-color: #60b8ff;
+}
+.btn.button-theme.light:hover{
+  background-color: #4c84b1;
+}
+.footerTitle.theme.light {
+  border-bottom: 2px solid black; 
+  /*border-bottom: 2px solid #000000;*/
+  padding-bottom: 5px
+}
+
+
+/******** Navbar bg ********/
+/********** Dark **********/
+.navbar-scrolled.theme {
+  background-color: #BA6436;
+  /*background-color:rgba(34, 32, 30, 1) ;*/
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.5);
+}
+#MenuNavbar.theme{
+  background-color: #BA6436;
+  box-shadow: 0 5px 5px rgba(255, 255, 255, 0.5);
+}
+/********** Light **********/
+.navbar-scrolled.theme.light {
+  background-color: rgb(221, 186, 162);
+  /*background-color: #BA6436;*/
+  box-shadow: 0 3px 10px rgba(0, 0,0, 0.5);
+}
+#MenuNavbar.theme.light{
+  background-color: rgb(221, 186, 162);
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+}
+/*
+.nav-link.texte-color{
+  color: white;
+}
+*/
+
+/******** Menu Dot ********/
+ul.pa-dot-leaders {
+  max-width: 40em;
+  padding: 0;
+  overflow-x: hidden;
+  list-style: none}
+ul.pa-dot-leaders li:before {
+  float: left;
+  width: 0;
+  white-space: nowrap;
+  content:
+". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+}
+ul.pa-dot-leaders  span:first-child {
+  padding-right: 0.33em;
+  background: white}
+ul.pa-dot-leaders span + span {
+  float: right;
+  padding-left: 0.33em;
+  background: white}
+
+/****** Main Navigation Bar ******/
+
+.navbar { transition: all 0.3s;}
+#LogoNav {opacity: 0; transition: all 0.3s; border: 2px solid;border-radius: 30px;border-color: black;background: black;}
+#LogoNav.light {border: 0px;}
+#MainNavbar {top:0; }
+a.nav-link.active {font-weight: bold;}
+a.nav-link:hover{
+  /*color:black;*/
+  color: rgb(148, 148, 148);
+}
+a.nav-link.texte-color:hover{
+  /*color:black;*/
+  color: rgb(148, 148, 148);
+}
+
+/****** Carte Navigation Bar ******/
+
+.button-menu.active {
+  font-weight: bold;
+  color: white;
+  border-bottom: 3px solid #ffffff; 
+}
+.button-menu.active:hover {
+  border-bottom: 3px solid rgb(230, 230, 230); 
+}
+.button-menu:hover {
+  color: rgb(230, 230, 230);
+}
+.button-menu{
+  transition: 0.2s;
+}
+
+
+/******Police******/
+  .AsianH1 {
+  font-family: ChowFun;
+  font-weight: normal;
+}
+  .asian2 {
+  font-family: Wonton;
+  font-weight: normal;
+  color:#BA6436;
+  font-size : 14px;
+}
+.description_carte {
+  font-size: 14px;
+  font-weight : 400;
+}
+
+
+
+
+/****** Button Brown ******/
+.text-button-brown:hover {
+  color: white;
+}
+.button-brown{
+  background-color:rgba(199, 178, 153, 1) ;
+}
+  .button-brown:hover{
+  background-color:rgb(150, 136, 119) ;
+}
+
+
+/****** Images ******/
+.accueil {
+  background: url(../Images/AccueilDark.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-image {
+    /*width: 100vw;*/
+    height: 100vh;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    filter:brightness(0.4);
+}
+.HeaderImage.theme {
+  filter:brightness(0.4);
+}
+.HeaderImage.theme.light {
+  filter:brightness(0.6);
+}
+#CarteHeader.bg-image.theme.light {
+  filter:brightness(0.8);
+}
+img {margin-bottom: -7px}
+.w3-row-padding img {margin-bottom: 12px}
+.bg-image-secondaire {
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  height: auto;
+  z-index: -1;
+  filter: brightness(0.5);
+  opacity: 1; 
+  transition: filter 0.5s;
+}
+.bg-image-secondaire:hover {
+  filter: brightness(0.2);
+}
+.center-img {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+
+/****** Pattern background *******/
+.pattern-bg.theme {
+
+	--u: 0.5vmin;
+	--c0: #232629;
+	--c1: #BA6436;
+	--c2: #232629;
+	--c3: #BA6436;
+	--c4: #232629;
+	--c5: #BA6436;
+	--c6: #232629;
+	--c7: #BA6436;
+	--c8: #232629;
+	--c9: #BA6436;
+  --gp: 50%/calc(var(--u) * 18) calc(var(--u) * 12);
+  --rainbow: 
+		var(--c0) 0 calc(var(--u) * 2.25), 
+		var(--c1) 0 calc(var(--u) * 3.25), 
+		var(--c2) calc(var(--u) * 3.35) calc(var(--u) * 4.25), 
+		var(--c3) calc(var(--u) * 4.35) calc(var(--u) * 5.25), 
+		var(--c4) calc(var(--u) * 5.35) calc(var(--u) * 6.25), 
+		var(--c5) calc(var(--u) * 6.35) calc(var(--u) * 7.25), 
+		var(--c6) calc(var(--u) * 7.35) calc(var(--u) * 8.25), 
+		var(--c7) calc(var(--u) * 8.35) calc(var(--u) * 9.25), 
+		#fff0 calc(var(--u) * 9.35) 100%;
+  --shine: 
+		var(--c9) 0 calc(var(--u) * 8.25), 
+		var(--c8) calc(var(--u) * 8.75) calc(var(--u) * 9.25), 
+		#fff0 calc(var(--u) * 9.35) 100%;
+  
+  background:  				  
+		radial-gradient(circle at 53% 130%, var(--rainbow)) var(--gp), 
+		radial-gradient(circle at 49% 125%, var(--shine)) var(--gp), 
+		linear-gradient(180deg, #fff0 70% , var(--c1) 100%) var(--gp),
+		radial-gradient(circle at 103% 83%, var(--rainbow)) var(--gp), 
+		radial-gradient(circle at 98% 78%, var(--shine)) var(--gp), 
+		radial-gradient(circle at 3% 83%, var(--rainbow)) var(--gp),
+		radial-gradient(circle at -2% 78%, var(--shine)) var(--gp), 
+		linear-gradient(180deg, #fff0 20% , var(--c1) 50%) var(--gp),  
+		radial-gradient(circle at 53% 30%, var(--rainbow)) var(--gp), 
+		radial-gradient(circle at 49% 25%, var(--shine)) var(--gp);
+}
+
+.pattern-bg.theme.light {
+
+	--u: 0.5vmin;
+	--c0: #c7b299;
+	--c1: #BA6436;
+	--c2: #c7b299;
+	--c3: #BA6436;
+	--c4: #c7b299;
+	--c5: #BA6436;
+	--c6: #c7b299;
+	--c7: #BA6436;
+	--c8: #c7b299;
+	--c9: #BA6436;
+  --gp: 50%/calc(var(--u) * 18) calc(var(--u) * 12);
+  --rainbow: 
+		var(--c0) 0 calc(var(--u) * 2.25), 
+		var(--c1) 0 calc(var(--u) * 3.25), 
+		var(--c2) calc(var(--u) * 3.35) calc(var(--u) * 4.25), 
+		var(--c3) calc(var(--u) * 4.35) calc(var(--u) * 5.25), 
+		var(--c4) calc(var(--u) * 5.35) calc(var(--u) * 6.25), 
+		var(--c5) calc(var(--u) * 6.35) calc(var(--u) * 7.25), 
+		var(--c6) calc(var(--u) * 7.35) calc(var(--u) * 8.25), 
+		var(--c7) calc(var(--u) * 8.35) calc(var(--u) * 9.25), 
+		#fff0 calc(var(--u) * 9.35) 100%;
+  --shine: 
+		var(--c9) 0 calc(var(--u) * 8.25), 
+		var(--c8) calc(var(--u) * 8.75) calc(var(--u) * 9.25), 
+		#fff0 calc(var(--u) * 9.35) 100%;
+  
+  background:  				  
+		radial-gradient(circle at 53% 130%, var(--rainbow)) var(--gp), 
+		radial-gradient(circle at 49% 125%, var(--shine)) var(--gp), 
+		linear-gradient(180deg, #fff0 70% , var(--c1) 100%) var(--gp),
+		radial-gradient(circle at 103% 83%, var(--rainbow)) var(--gp), 
+		radial-gradient(circle at 98% 78%, var(--shine)) var(--gp), 
+		radial-gradient(circle at 3% 83%, var(--rainbow)) var(--gp),
+		radial-gradient(circle at -2% 78%, var(--shine)) var(--gp), 
+		linear-gradient(180deg, #fff0 20% , var(--c1) 50%) var(--gp),  
+		radial-gradient(circle at 53% 30%, var(--rainbow)) var(--gp), 
+		radial-gradient(circle at 49% 25%, var(--shine)) var(--gp);
+}
+
+
+
+/****** Animation *******/
+.title {
+  animation: fadeIn 2s;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.animate-on-scroll {
+    /* Initialement invisible avec une opacité de 0 */
+    opacity: 0;
+    /* Translation initiale de 50 pixels vers le bas */
+    transform: translateY(50px);
+    /* Animation pour la transparence et la translation */
+    transition: opacity 0.5s ease-in-out, transform 0.6s ease-in-out;
+  }
+
+.animate-on-scroll.is-visible {
+  /* Devenir visible avec une opacité de 1 */
+  opacity: 1;
+  /* Translation initiale de 0 pixels */
+  transform: translateY(0);
+}
+
+
+
+  
+

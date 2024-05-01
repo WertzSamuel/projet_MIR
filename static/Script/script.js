@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Fonction empéchant certaines combinaisons de descripteurs
 function toggleCheckboxes() {
-    var mix = document.getElementById("mix").value;
+    var mix = document.getElementById("mix");
     var checkboxes = document.querySelectorAll(".single");
     var checkedCount = 0;
     var selectedCheckboxes = [];
@@ -38,7 +38,7 @@ function toggleCheckboxes() {
     });
 
     // Si on ne veut pas concaténer -> un seul descripteur à la fois
-    if (mix === "non" && checkedCount >= 1) {
+    if (mix.checked == false && checkedCount >= 1) {
         checkboxes.forEach(function(checkbox) {
             checkbox.checked = false;
             checkbox.disabled = true;
@@ -48,7 +48,7 @@ function toggleCheckboxes() {
             checkbox.disabled = false;
         });
     }
-    else if (mix === "oui") {
+    else if (mix.checked){
 
         // Si on veut concaténer -> pas de SIFT ou ORB
         checkboxes.forEach(function(checkbox) {
@@ -99,7 +99,21 @@ function toggleDistances() {
 }
 
 
+function loadImageRequest(){
+    var image_selected = $("#imageSelect").val();
+    var image_path = "/static/images_requêtes/" + image_selected + ".jpg"
+    $("#image_requete").attr("src",image_path);
+}
+
 $(document).ready(function(){
+
+    
+
+    loadImageRequest();
+
+    $("#imageSelect").change( function( event ) {
+        loadImageRequest();
+      });
 
     // Récupère les 50 images les + proches si on clique sur le bouton
     $("#top50").click(function(){

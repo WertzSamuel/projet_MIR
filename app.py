@@ -170,7 +170,7 @@ def logout():
 def loadFeatures(concatenate, folder_model):
     t1 = time.time()
     
-    if concatenate == 'oui':
+    if concatenate:
         folder_model = concatenation('static/dataset', config['to_concatenate'], config['descripteur'])
         print(folder_model)
 
