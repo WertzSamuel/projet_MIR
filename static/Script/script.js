@@ -140,7 +140,7 @@ function get_time() {
     $.get('/get_time_data', function(data){
         $('#timeTable tbody').empty();
         $.each(data, function(index, item){
-            $('#timeTable tbody').append('<tr><td>' + item.Descripteur + '</td><td>' + item.Indexation + '</td><td>' + item.Recherche + '</td><td>' + item.Moyen + '</td></tr>');
+            $('#timeTable tbody').append('<tr><td>' + item.Descripteur + '</td><td>' + item.Recherche + '</td><td>' + item.Moyen + '</td></tr>');
         });
         $('#timeContainer').show();
     });
@@ -171,8 +171,14 @@ $(document).ready(function(){
       });
 
     loadImageRequest();    
-    get_top();
-    get_RP(); 
     get_time();
-    get_metrics();
+    var image_selected = $("#imageSelect").val();
+    if (image_selected != "All_R") {
+        get_top();
+        get_RP(); 
+    }
+    else {
+        get_metrics();
+    }
+    
 });

@@ -1,5 +1,8 @@
 
-
+.center {
+  margin: auto;
+  padding: 10px;
+}
 /****** Background color *******/
 /*********** Dark **************/
 .fond.theme{

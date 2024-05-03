@@ -11,7 +11,8 @@ from skimage.io import imread
 from skimage.feature import hog
 from skimage import exposure
 from matplotlib import pyplot as plt
-from functions import extractReqFeatures, concatenation
+from functions import extractReqFeatures, concatenation, update_descripteur_config, is_descripteur_selected, loadFeatures
+from functions import Recherche, rappel_precision
 from distances import *
 import time
 import hashlib
@@ -23,7 +24,7 @@ app.secret_key = 'secret'
 config = dict()
 config['descripteur'] = dict()
 config['image_url'] = ''
-config['to_concatenate'] = list()
+config['folder_model'] = list()
 config['features'] = list()
 config['distance'] = ''
 config['images_proches'] = list()
@@ -51,262 +52,86 @@ requete = {"1_4_Kia_stinger_1944": 0,
 @app.route('/', methods=['GET', 'POST'])
 def index():
 
-    if config['distance'] == '' :
-        session['descripteur_selected'] = False
-        session['image_selected'] = False
-        session['indexation_done'] = False
-    
+    # Si pas encore connecté, on renvoie vers la page de connexion
     if not session.get('logged_in'):
         return render_template('login.html')
     
     if request.method == "POST" and "recherche" in request.form:
 
         session['indexation_done'] = False
-        #Choix des descripteurs et de la distance
-        config['descripteur'] = dict()
 
+        # Récupération des options de recherche
         config['concatenate'] = request.form.get("mix")
         config['distance'] = request.form.get("distance")
         config['top'] = int(request.form.get("top"))
-        update_descripteur_config(request.form)
-        if not is_descripteur_selected():
+        image_name = request.form.get('imageSelect')
+        config['descripteur'] = update_descripteur_config(request.form)
+
+        # Message d'erreur si pas de descripteur sélectionné
+        if not is_descripteur_selected(config['descripteur']):
             flash('Pas de descripteur sélectionné', 'danger')
             return redirect(request.url)
         
+        # On récupère le chemin des descripteurs sélectionnés
         for desc in config['descripteur']:
             if config['descripteur'][desc] == 'on':
                 folder_model = "static/" + desc.upper() + ".json"
-                config['to_concatenate'].append(folder_model)
+                config['folder_model'].append(folder_model)
 
-        config['features'] = loadFeatures(config['concatenate'], folder_model)
+        # Chargement des descripteurs
+        config['features'] = loadFeatures(config['concatenate'], config['folder_model'])
 
-        session['descripteur_selected'] = True
-
-        # On vérifie que les descripteurs ont bien été chargés
-        if not session.get('descripteur_selected'):
-            flash("Veuillez confirmer vos options de recherches d'abord")
+        # On vérifie si on doit exécuter les requêtes ou une seule
+        if image_name == "All_R":
+            requests = requete
+            session['all'] = True
         else:
-            concatenate = request.form.get("mix")
-            # Choix de l'image
-            name = request.form.get('imageSelect')
-            if name == "All_R":
-                for req in requete:
+            requests = [image_name]
+            session['all'] = False
 
-                    config['image_url'] = "static/images_requêtes/" + req +".jpg"
-                    session['image_selected'] = True
-                    config['images_proches'], noms_proches = Recherche(config['concatenate'], config['descripteur'], config['distance'], config['top'])
-                    config['RP'] = [rappel_precision(config['top'], noms_proches)]
-                    session['indexation_done'] = True
-                    session['all'] = True
-
-            else:
-                config['image_url'] = "static/images_requêtes/" + name +".jpg"
-                session['image_selected'] = True
-                config['images_proches'], noms_proches = Recherche(config['concatenate'], config['descripteur'], config['distance'], config['top'])
-                config['RP'] = [rappel_precision(config['top'], noms_proches)]
+        # On effectue la recherche 
+        total_time = 0
+        for i, req in enumerate(requete):
+            if req in requests:
+                config['image_url'] = "static/images_requêtes/" + req +".jpg"
+                config['images_proches'], noms_proches, search_time = Recherche(config['image_url'], config['features'], config['distance'], config['top'])
+                config['RP'], config['metrics'][i] = rappel_precision(config['top'], noms_proches, config['image_url'], config['metrics'][i][0])
                 session['indexation_done'] = True
-                session['all'] = False
+                total_time += search_time
+        config['time'] = [total_time, total_time/len(requests)]
+        flash('Recherche terminé', 'success')  
 
-            flash('Recherche terminé', 'success')  
-
-            return redirect('/')
+        return redirect('/')
 
     return render_template('index.html', config=config)
 
-
-def update_descripteur_config(form):
-    config['descripteur'] = {
-        'bgr': form.get('BGR'),
-        'hsv': form.get('HSV'),
-        'sift': form.get('SIFT'),
-        'orb': form.get('ORB'),
-        'glcm': form.get('GLCM'),
-        'hog': form.get('HOG'),
-        'lbp': form.get('LBP'),
-        'VGG16': form.get('VGG16'),
-        'VGG16_2': form.get('VGG16_2'),
-        'VGG19': form.get('VGG19'),
-        'VGG19_2': form.get('VGG19_2'),
-        'ResNet50': form.get('ResNet50'),
-        'ResNet50_2': form.get('ResNet50_2'),
-        'Xception': form.get('Xception'),     
-        'Xception_2': form.get('Xception_2'),     
-        'InceptionV3': form.get('InceptionV3'),     
-        'InceptionV3_2': form.get('InceptionV3_2'), 
-    }
-
-def is_descripteur_selected():
-    descripteurs = config['descripteur']
-    return any(value for value in descripteurs.values())
-
-def loadFeatures(concatenate, folder_model):
-    t1 = time.time()
-
-    if concatenate:
-        folder_model = concatenation('static/dataset', config['to_concatenate'], config['descripteur'])
-        print(folder_model)
-
-    ##Charger les features de la base de données.
-    file = folder_model
-    with open(file, "r") as fichier:
-        features1 = json.load(fichier)
-
-    t2 = time.time()
-
-    config['time'][0] = t2-t1
-
-    return features1
-
-
-def Recherche(concatenate, desc, dist, sortie):
-    t1 = time.time()
-    fileName = config['image_url']
-    descripteurs = config['descripteur']
-    features = config['features']
-
-    #Remise à 0 de la grille des voisins 
-    voisins=""
-
-    ##Generer les features de l'images requete
-    """
-    if concatenate == 'oui':
-        algo_choice1 = None
-        algo_choice2 = None
-        for desc in descripteurs:
-            if descripteurs[desc] == 'on' and not algo_choice1:
-                algo_choice1 = desc
-            elif descripteurs[desc] == 'on':
-                algo_choice2 = desc
-        req1 = extractReqFeatures(fileName, algo_choice1)
-        req2 = extractReqFeatures(fileName, algo_choice2)
-        req =  np.concatenate([req1,req2])
-    
-    else:
-    """
-    for desc in descripteurs:
-        if descripteurs[desc] == 'on':
-            algo_choice = desc
-            break
-    req = extractReqFeatures(fileName, algo_choice, features)
-
-    #Générer les voisins
-    voisins=getkVoisins(config['features'], req, sortie, dist)
-    path_image_plus_proches = []
-    nom_image_plus_proches = []
-    for k in range(sortie):
-        path_image_plus_proches.append("static/dataset/"+voisins[k][0]+".jpg")
-        nom_image_plus_proches.append(voisins[k][0])
-
-    t2 = time.time()
-    search_time = t2-t1
-    config['time'][1], config['time'][2] = search_time, search_time/len(config['features'])
-    
-    return path_image_plus_proches, nom_image_plus_proches
-
 @app.route("/get_top")
 def get_top():
-    if session.get('indexation_done') and not session.get('all'):
+    if session.get('indexation_done'):
         images = config['images_proches'][:config['top']]
         return jsonify(images)
     
 
-
-def rappel_precision(sortie, nom_image_plus_proches):
-    t1 = time.time()
-
-    fileName = config['image_url']
-    size = 1000
-    rappel_precision=[]
-    rappels=[]
-    precisions=[]
-    filename_req=os.path.basename(fileName)
-    name_image, _ = filename_req.split(".")
-    name_image = name_image.split('_')
-    num_image = name_image[-1]
-    classe_image_requete = name_image[0]
-    sous_classe_image_requete = name_image[1]
-    val =0
-    
-    for j in range(sortie):
-        name_image_proche = nom_image_plus_proches[j].split('_')
-        classe_image_proche = name_image_proche[0]
-        classe_image_requete = int(classe_image_requete)
-        classe_image_proche = int(classe_image_proche.lstrip('dataset\\'))
-        if classe_image_requete==classe_image_proche:
-            rappel_precision.append(True) #Bonne classe (pertinant)
-            val += 1
-        else:
-            rappel_precision.append(False) #Mauvaise classe (non pertinant)
-    for i in range(sortie):
-        j=i
-        val=0
-        while(j>=0):
-            if rappel_precision[j]:
-                val+=1
-            j-=1 
-        precision = (val/(i+1)) * 100
-        rappel = (val/sortie) * 100
-        rappels.append(rappel)
-        precisions.append(precision)
-
-    
-    req = requete[fileName.lstrip("static/images_requêtes/").rstrip(".jpg")]
-
-    config['metrics'][req][1] = rappels[(sortie//2)-1]
-    config['metrics'][req][3] = precisions[(sortie//2)-1]
-    config['metrics'][req][2] = rappels[(sortie)-1]
-    config['metrics'][req][4] = precisions[(sortie)-1]
-
-    #Création de la courbe R/P
-    plt.plot(rappels,precisions)
-    plt.xlabel("Recall")
-    plt.ylabel("Precision")
-    plt.title("R/P "+str(sortie)+" voisins de l'image n°"+num_image)
-
-    average_P = 0
-    deno = 0
-    for i in range(sortie):
-        if rappel_precision[i]:
-            average_P += precisions[i]
-            deno += 1
-        if i == sortie//2:
-            config['metrics'][req][5] = average_P/deno
-
-    config['metrics'][req][6] = average_P/deno
-
-    #Enregistrement de la courbe RP
-    save_folder="static/RP/"
-    if not os.path.exists(save_folder):
-        os.makedirs(save_folder)
-    save_name=os.path.join(save_folder, num_image+'.png')
-    plt.savefig(save_name,format='png',dpi=600)
-    plt.close()
-
-    t2 = time.time()
-
-    return save_name
-
-
 @app.route("/get_RP")
 def get_RP():
-    if not session.get('indexation_done') or session.get('all'):
+    if not session.get('indexation_done'):
         #flash("Veuillez effectuer la recherche en indexant l'image d'abord")
         return []
     else:
+        print(config['RP'])
         return config['RP']
     
 @app.route("/get_time_data")
 def get_time_data():
 
-    if session.get('indexation_done') and not session.get('all'):
+    if session.get('indexation_done'):
         for d in config['descripteur']:
             if config['descripteur'][d] == 'on':
                 desc = d.upper()
         data = [
             {'Descripteur' : desc, 
-            'Indexation': round(config['time'][0], 2), 
-            'Recherche': round(config['time'][1], 2), 
-            'Moyen': round(config['time'][2], 2)},
+            'Recherche': round(config['time'][0], 2), 
+            'Moyen': round(config['time'][1], 2)},
         ]
         return jsonify(data)
 
@@ -334,7 +159,6 @@ def get_moy():
        
         s_AP50, s_AP100, c = 0, 0, 0
         for element in data:
-            print(element)
             if element[5] != 0:
                 s_AP50 += element[5]
                 s_AP100 += element[6]
