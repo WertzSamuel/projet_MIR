@@ -149,7 +149,7 @@ def rappel_precision(top, nom_image_plus_proches, fileName, R):
     metrics.append(average_P/deno)
 
     #Enregistrement de la courbe RP
-    save_folder="/static/RP/"
+    save_folder="static/RP/"
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
 

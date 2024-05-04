@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-100" data-bs-theme="light">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/Script/script.js"></script>
+    <script src="/static/Script/Theme.js"></script>
+    <script src="/static/Script/Cookie.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <meta charset="UTF-8">
+    <title>Moteur de recherche</title>
+    <link rel="stylesheet" href="/static/CSS/Boostrap.css">
+    <link rel="stylesheet" href="/static/CSS/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/jumbotron/">
+
+
+    
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+        <symbol id="check2" viewBox="0 0 16 16">
+        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </symbol>
+        <symbol id="circle-half" viewBox="0 0 16 16">
+        <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+        </symbol>
+        <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+        <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+        </symbol>
+        <symbol id="sun-fill" viewBox="0 0 16 16">
+        <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+        </symbol>
+    </svg>
+
+</head>
+<body class="fond theme">
+
+    <nav class="navbar theme navigation navbar-expand-md navbar-scrolled sticky-top" id="MainNavbar">
+        <div class="container-fluid">
+            <a  class="navbar-brand ms-3" href="/">
+                <img src="static/Images/logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top theme" style="border-radius: 50%;">
+            </a>
+            <button id="nav-button" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    
+                    <li class="nav-item my-auto mx-md-2 mx-auto">
+                        <svg class="bi my-1 my-auto theme-icon-active icon theme" width="1em" height="1em" type="button" onclick="ChangeTheme();CloseNav()"><use id="moonandsun" href="#moon-stars-fill"></use></svg>
+                    </li>
+
+                    <li class="nav-item mx-md-2 mx-auto">
+                        <a class="nav-link fs-md-3 texte-color theme" aria-current="page" href="/">Accueil</a>
+                    </li>
+                    <li class="nav-item mx-md-2 mx-auto">
+                        <a class="nav-link active fs-md-3 texte-color theme" href="{{url_for('search')}}">Recherche</a>
+                    </li>
+                    <!-- Bouton de déconnexion -->
+                    {% if session.logged_in %}
+                    <li class="nav-item my-auto mx-md-2 mx-auto"></li>
+                        <a href="{{ url_for('logout') }}" class="btn btn-secondary">Déconnexion</a>
+                    {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+
+    <!-- On se prépare à recevoir des messages flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{category}} my-3 mx-5">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    
+    <div class="container">
+        <form method="post">
+
+        
+            <form method="POST">
+                <div class="table mx-auto my-5 py-5 " >
+                    <h2 class="texte-color theme text-center">Sélection des options de recherche </h2>
+                    <br>
+                    <div class="bg-white text-dark flashCard theme rounded-5 mx-md-auto mx-3" >
+                        <div class="container py-2  ">
+                            <div class="container ">
+                                <div class="row mx-auto py-3 pe-4">
+                                    <!--Colonne de gauche-->
+                                    <div class = "col-md-6">
+                                        <div class="container">
+                                            <div class="row input-group my-3 ">
+                                                <span class="input-group-text col-md-6">
+                                                    <h5><label class="form-check-label me-3" for="top"><strong>Top : </strong></label></h5>
+                                                    <input type="number" class="form-control" id="top" name="top" min="1" max="1000" value="50" required>
+                                                </span>    
+                                            </div>
+                                            
+                                
+                                            <!-- Case à cocher pour les descripteurs -->
+                                            <div class="input-group my-3" id="checkboxes" aria-required="true">
+                                                
+                                                <div class="row input-group my-3 ">
+                                                    <span class="input-group-text col-md-6">
+                                                        <h5 ><label for="checkboxes"><strong>Descripteur(s) :</strong></label></h5>
+                                                    </span>
+                                                    <span class="input-group-text col-md-6">
+                                                        <h5><label class="form-check-label me-3" for="mix"><strong>Concaténation : </strong></label></h5>
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" role="switch" name="mix" id="mix" onclick = "toggleCheckboxes()">
+                                                        </div>
+                                                    </span>
+                                                </div>
+                                                <div class = "col-md-4">
+                                                    <input class="form-check-input single" type="checkbox" name="BGR" id="BGR">
+                                                    <label class="form-check-label" for="BGR">BGR</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="HSV" id="HSV">
+                                                    <label class="form-check-label" for="HSV">HSV</label><br>
+                                                    
+                                                    <input class="form-check-input single" type="checkbox" name="GLCM" id="GLCM">
+                                                    <label class="form-check-label" for="GLCM">GLCM</label><br>
+
+                                                    <input class="form-check-input single" type="checkbox" name="HOG" id="HOG">
+                                                    <label class="form-check-label" for="HOG">HOG</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="LBP" id="LBP">
+                                                    <label class="form-check-label" for="LBP">LBP</label><br>
+
+                                                    <input class="form-check-input single" type="checkbox" name="SIFT" id="SIFT">
+                                                    <label class="form-check-label" for="SIFT">SIFT</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="ORB" id="ORB">
+                                                    <label class="form-check-label" for="ORB">ORB</label><br>
+                                                </div>
+
+                                                <div class = "col-md-4">
+                                                    <input class="form-check-input single" type="checkbox" name="VGG16" id="VGG16">
+                                                    <label class="form-check-label" for="VGG16">VGG16</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="VGG16_2" id="VGG16_2">
+                                                    <label class="form-check-label" for="VGG16_2">VGG16_2</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="VGG19" id="VGG19">
+                                                    <label class="form-check-label" for="VGG19">VGG19</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="VGG19_2" id="VGG19_2">
+                                                    <label class="form-check-label" for="VGG19_2">VGG19_2</label><br>
+
+                                                    <input class="form-check-input single" type="checkbox" name="ResNet50" id="ResNet50">
+                                                    <label class="form-check-label" for="ResNet50">ResNet50</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="ResNet50_2" id="ResNet50_2">
+                                                    <label class="form-check-label" for="ResNet50_2">ResNet50_2</label><br>
+                                                </div>
+
+                                                <div class = "col-md-4">
+                                                    <input class="form-check-input single" type="checkbox" name="Xception" id="Xception" class="single" >
+                                                    <label class="form-check-label" for="Xception">Xception</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="Xception_2" id="Xception_2" class="single" >
+                                                    <label class="form-check-label" for="Xception_2">Xception_2</label><br>
+                                                    
+                                                    <input class="form-check-input single" type="checkbox" name="InceptionV3" id="InceptionV3" class="single" >
+                                                    <label class="form-check-label" for="InceptionV3">InceptionV3</label><br>
+                                    
+                                                    <input class="form-check-input single" type="checkbox" name="InceptionV3_2" id="InceptionV3_2" class="single" >
+                                                    <label class="form-check-label" for="InceptionV3_2">InceptionV3_2</label><br>
+                                                </div>
+                                
+                                            </div>
+                                
+                                            <!-- Liste déroulante pour la distance -->
+                                            <div class="row input-group my-3 " id="distances">
+                                                <span class="input-group-text col-md-12">
+                                                    <h5><label class="me-3"><strong>Distances : </strong></label></h5>    
+                                                    <select name="distance" id="distanceSelect"  class="form-select">
+                                                        <option selected value="Euclidienne">Euclidienne</option>
+                                                        <option value="Correlation">Correlation</option>
+                                                        <option value="Chi carre">Chi Carré</option>
+                                                        <option value="Intersection">Intersection</option>
+                                                        <option value="Brute-force">Bhattacharyya</option>
+                                                        <option value="Brute_force">Brute-force</option>
+                                                        <option value="Flann">Flann</option>
+                                                    </select>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!--Colonne de droite-->
+                                    <div class = "col-md-6">
+                                        <div class="container">
+                                            <!-- Liste déroulante pour l'image requête -->
+                                            <div class="container" id="imagerequete">
+                                                <div class=" mx-auto">
+                                                    <div class="row input-group my-3 ">
+                                                        <span class="input-group-text col-md-4">
+                                                            <h5><label class="me-3"><strong>Image requête : </strong></label></h5>    
+                                                        </span>    
+                                                        <span class="input-group-text col-md-8">
+                                                            <select name="imageSelect" id="imageSelect"  class="form-select" required>
+                                                                <option selected value="1_4_Kia_stinger_1944">R1 - 1_4_Kia_stinger_1944</option>
+                                                                <option value="1_2_Kia_sorento_1675">R2 - 1_2_Kia_sorento_1675</option>
+                                                                <option value="1_9_Kia_stonic_2629">R3 - 1_9_Kia_stonic_2629</option>
+                                                                <option value="3_1_Renault_Twingo_4491">R4 - 3_1_Renault_Twingo_4491</option>
+                                                                <option value="3_0_Renault_grandscenic_4372">R5 - 3_0_Renault_grandscenic_4372</option>
+                                                                <option value="3_5_Renault_clio_5101">R6 - 3_5_Renault_clio_5101</option>
+                                                                <option value="5_0_Mercedes_ClasseCLS_7059">R7 - 5_0_Mercedes_ClasseCLS_7059</option>
+                                                                <option value="5_3_Mercedes_classeC_7403">R8 - 5_3_Mercedes_classeC_7403</option>
+                                                                <option value="5_8_Mercedes_CLA_7992">R9 - 5_8_Mercedes_CLA_7992</option>
+                                                                <option value="7_0_Peugeot_508break_9642">R10 - 7_0_Peugeot_508break_9642</option>
+                                                                <option value="7_3_Peugeot_Rifter_10091">R11 - 7_3_Peugeot_Rifter_10091</option>
+                                                                <option value="7_6_Peugeot_3008_10530">R12 - 7_6_Peugeot_3008_10530</option>
+                                                                <option value="9_0_Audi_A6_12288">R13 - 9_0_Audi_A6_12288</option>
+                                                                <option value="9_3_Audi_Q7_12722">R14 - 9_3_Audi_Q7_12722</option>
+                                                                <option value="9_4_Audi_A1_12833">R15 - 9_4_Audi_A1_12833</option>
+                                                                <option value="All_R">Toutes les requêtes</option>
+                                                            </select>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row mx-auto my-5">
+                                                    <img id="image_requete" src="" style="width:70%" class="mx-auto">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mx-auto py-3 pe-4">
+                                    <div class = "d-grid gap-2 col-3 mx-auto">
+                                        
+                                            <button class="btn btn-primary py-2" type='submit' name="recherche" id="Recherche"><strong>Rechercher l'image</strong></button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            
+
+            <!-- Liste déroulante pour concaténation -->
+            
+                
+
+            <div class="" id="Resultats">
+                <h2 class="texte-color theme text-center">Affichage des résultats</h2>
+
+                <!-- Conteneurs pour afficher les images et la courbe RP -->
+                <div class="row mx-auto my-5">
+                    
+                    <div class="col-md-6 mx-auto my-md-0 my-5 text-center">
+                        <!-- Container pour afficher les temps de processing -->
+                        <div id="timeContainer" class="bg-white text-dark flashCard theme rounded-5 py-3 px-3" style="display: none;">
+                            <table class="table texte-color theme " id="timeTable">
+                                <thead>
+                                    <tr class="table-active ">
+                                        <th> Descripteur </th>
+                                        <th> Temps de recherche (s) </th>
+                                        <th> Temps de recherche moyen par image (s) </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-6 mx-auto text-center">
+                        <div id="conteneur_RP" class="bg-white text-dark flashCard theme rounded-5 py-3 px-3" style="display: none;" >
+                        </div>
+                    </div>
+                </div>
+                <div id="conteneur_images" class="my-2"></div>
+
+                <br></br>
+
+                <!-- Container pour afficher les métriques précises -->
+
+                <div id="metricContainer" style="display: none;">
+                    <div class="bg-white text-dark flashCard theme rounded-5 mx-auto my-3 py-2 " style="width:30vw">
+                        <div class="row my-4 mx-auto text-center">
+                            <div class="col-6">
+                                <h5 id="MAP50"></h5>
+                            </div>
+                            <div class="col-6">
+                                <h5 id="MAP100"></h5>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                
+                    
+                    <table class="table table-striped-columns flashCard theme " id="metricTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Requête</th>
+                                <th colspan="2">R</th>
+                                <th colspan="2">P</th>
+                                <th colspan="2">AP</th>
+                            </tr>
+                            <tr>
+                                <th>Top 50</th>
+                                <th>Top 100</th>
+                                <th>Top 50</th>
+                                <th>Top 100</th>
+                                <th>Top 50</th>
+                                <th>Top 100</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+                
+
+            
+
+        </form>
+    </div>
+</body>
+</html>

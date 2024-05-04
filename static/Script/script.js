@@ -172,13 +172,9 @@ $(document).ready(function(){
 
     loadImageRequest();    
     get_time();
-    var image_selected = $("#imageSelect").val();
-    if (image_selected != "All_R") {
-        get_top();
-        get_RP(); 
-    }
-    else {
-        get_metrics();
-    }
+    get_top();
+    get_RP(); 
+    get_metrics();
+    
     
 });

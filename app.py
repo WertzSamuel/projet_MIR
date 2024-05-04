@@ -1,22 +1,8 @@
 from flask import Flask, render_template, session, request, flash, redirect, url_for, jsonify
-from PyQt5 import QtCore, QtGui, QtWidgets
-import os
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import QFileDialog
-import cv2
-import numpy as np
-from skimage.transform import resize
-from skimage.io import imread
-from skimage.feature import hog
-from skimage import exposure
-from matplotlib import pyplot as plt
-from functions import extractReqFeatures, concatenation, update_descripteur_config, is_descripteur_selected, loadFeatures
-from functions import Recherche, rappel_precision
+from functions import update_descripteur_config, is_descripteur_selected
+from functions import loadFeatures, Recherche, rappel_precision
 from distances import *
-import time
 import hashlib
-import json
 
 app = Flask(__name__)
 
@@ -51,11 +37,18 @@ requete = {"1_4_Kia_stinger_1944": 0,
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-
-    # Si pas encore connecté, on renvoie vers la page de connexion
-    if not session.get('logged_in'):
-        return render_template('login.html')
+    if request.method == "POST" and "search" in request.form:
+        
+        return redirect(url_for('search'))  
     
+    return render_template('index.html', config=config)
+    
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if not session.get('logged_in'):
+        return render_template('login.html')  
+
     if request.method == "POST" and "recherche" in request.form:
 
         session['indexation_done'] = False
@@ -70,7 +63,7 @@ def index():
         # Message d'erreur si pas de descripteur sélectionné
         if not is_descripteur_selected(config['descripteur']):
             flash('Pas de descripteur sélectionné', 'danger')
-            return redirect(request.url)
+            return redirect(url_for('search'))
         
         # On récupère le chemin des descripteurs sélectionnés
         for desc in config['descripteur']:
@@ -99,22 +92,23 @@ def index():
                 session['indexation_done'] = True
                 total_time += search_time
         config['time'] = [total_time, total_time/len(requests)]
-        flash('Recherche terminé', 'success')  
+        flash('Recherche terminée', 'success')  
 
-        return redirect('/')
+        return redirect(url_for('search'))
 
-    return render_template('index.html', config=config)
+    return render_template('search.html', config=config)
+
 
 @app.route("/get_top")
 def get_top():
-    if session.get('indexation_done'):
+    if session.get('indexation_done') and not session.get('all'):
         images = config['images_proches'][:config['top']]
         return jsonify(images)
     
 
 @app.route("/get_RP")
 def get_RP():
-    if not session.get('indexation_done'):
+    if not session.get('indexation_done') or session.get('all'):
         #flash("Veuillez effectuer la recherche en indexant l'image d'abord")
         return []
     else:
@@ -138,7 +132,7 @@ def get_time_data():
 @app.route("/get_metric_data")
 def get_metric_data():
 
-    if session.get('indexation_done'):
+    if session.get('indexation_done') and session.get('all'):
         data = [
             {'Requete' : config['metrics'][i][0], 
             'R50': round(config['metrics'][i][1], 2), 
@@ -168,7 +162,7 @@ def get_moy():
         return jsonify(moy)
     
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     salt = "gz42"
     if request.method == 'POST' and 'form_login' in request.form:
@@ -183,7 +177,7 @@ def login():
             session['logged_in'] = True
         else:
             flash('Accès refusé, mauvais identifiants', 'danger')
-    return redirect(url_for('index'))
+    return redirect(url_for('search'))
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -208,12 +202,23 @@ def register():
             with open ("static/mdp.txt", "a") as fout:
                 fout.write(f"{request.form.get('username')}, {hash_pwd.hexdigest()}\n")
             session['logged_in'] = True
-    return redirect(url_for('index'))
+    return redirect(url_for('search'))
 
 @app.route("/logout")
 def logout():
+    config['descripteur'] = dict()
+    config['image_url'] = ''
+    config['folder_model'] = list()
+    config['features'] = list()
+    config['distance'] = ''
+    config['images_proches'] = list()
+    config['RP'] = list()
+    config['concatenate'] = ''
+    config['time'] = [0]*3
+    config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
     session['logged_in'] = False
-    return index()
+    session['all'] = False
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -122,11 +122,7 @@ a.nav-link.texte-color:hover{
 }
 
 /****** Images ******/
-.accueil {
-  background: url(../Images/AccueilDark.jpg);
-  background-size: cover;
-  background-repeat: no-repeat;
-}
+
 .bg-image {
     /*width: 100vw;*/
     height: 100vh;
@@ -168,92 +164,6 @@ top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
 }
-
-/****** Pattern background *******/
-.pattern-bg.theme {
-
-	--u: 0.5vmin;
-	--c0: #232629;
-	--c1: #BA6436;
-	--c2: #232629;
-	--c3: #BA6436;
-	--c4: #232629;
-	--c5: #BA6436;
-	--c6: #232629;
-	--c7: #BA6436;
-	--c8: #232629;
-	--c9: #BA6436;
-  --gp: 50%/calc(var(--u) * 18) calc(var(--u) * 12);
-  --rainbow: 
-		var(--c0) 0 calc(var(--u) * 2.25), 
-		var(--c1) 0 calc(var(--u) * 3.25), 
-		var(--c2) calc(var(--u) * 3.35) calc(var(--u) * 4.25), 
-		var(--c3) calc(var(--u) * 4.35) calc(var(--u) * 5.25), 
-		var(--c4) calc(var(--u) * 5.35) calc(var(--u) * 6.25), 
-		var(--c5) calc(var(--u) * 6.35) calc(var(--u) * 7.25), 
-		var(--c6) calc(var(--u) * 7.35) calc(var(--u) * 8.25), 
-		var(--c7) calc(var(--u) * 8.35) calc(var(--u) * 9.25), 
-		#fff0 calc(var(--u) * 9.35) 100%;
-  --shine: 
-		var(--c9) 0 calc(var(--u) * 8.25), 
-		var(--c8) calc(var(--u) * 8.75) calc(var(--u) * 9.25), 
-		#fff0 calc(var(--u) * 9.35) 100%;
-  
-  background:  				  
-		radial-gradient(circle at 53% 130%, var(--rainbow)) var(--gp), 
-		radial-gradient(circle at 49% 125%, var(--shine)) var(--gp), 
-		linear-gradient(180deg, #fff0 70% , var(--c1) 100%) var(--gp),
-		radial-gradient(circle at 103% 83%, var(--rainbow)) var(--gp), 
-		radial-gradient(circle at 98% 78%, var(--shine)) var(--gp), 
-		radial-gradient(circle at 3% 83%, var(--rainbow)) var(--gp),
-		radial-gradient(circle at -2% 78%, var(--shine)) var(--gp), 
-		linear-gradient(180deg, #fff0 20% , var(--c1) 50%) var(--gp),  
-		radial-gradient(circle at 53% 30%, var(--rainbow)) var(--gp), 
-		radial-gradient(circle at 49% 25%, var(--shine)) var(--gp);
-}
-
-.pattern-bg.theme.light {
-
-	--u: 0.5vmin;
-	--c0: #c7b299;
-	--c1: #BA6436;
-	--c2: #c7b299;
-	--c3: #BA6436;
-	--c4: #c7b299;
-	--c5: #BA6436;
-	--c6: #c7b299;
-	--c7: #BA6436;
-	--c8: #c7b299;
-	--c9: #BA6436;
-  --gp: 50%/calc(var(--u) * 18) calc(var(--u) * 12);
-  --rainbow: 
-		var(--c0) 0 calc(var(--u) * 2.25), 
-		var(--c1) 0 calc(var(--u) * 3.25), 
-		var(--c2) calc(var(--u) * 3.35) calc(var(--u) * 4.25), 
-		var(--c3) calc(var(--u) * 4.35) calc(var(--u) * 5.25), 
-		var(--c4) calc(var(--u) * 5.35) calc(var(--u) * 6.25), 
-		var(--c5) calc(var(--u) * 6.35) calc(var(--u) * 7.25), 
-		var(--c6) calc(var(--u) * 7.35) calc(var(--u) * 8.25), 
-		var(--c7) calc(var(--u) * 8.35) calc(var(--u) * 9.25), 
-		#fff0 calc(var(--u) * 9.35) 100%;
-  --shine: 
-		var(--c9) 0 calc(var(--u) * 8.25), 
-		var(--c8) calc(var(--u) * 8.75) calc(var(--u) * 9.25), 
-		#fff0 calc(var(--u) * 9.35) 100%;
-  
-  background:  				  
-		radial-gradient(circle at 53% 130%, var(--rainbow)) var(--gp), 
-		radial-gradient(circle at 49% 125%, var(--shine)) var(--gp), 
-		linear-gradient(180deg, #fff0 70% , var(--c1) 100%) var(--gp),
-		radial-gradient(circle at 103% 83%, var(--rainbow)) var(--gp), 
-		radial-gradient(circle at 98% 78%, var(--shine)) var(--gp), 
-		radial-gradient(circle at 3% 83%, var(--rainbow)) var(--gp),
-		radial-gradient(circle at -2% 78%, var(--shine)) var(--gp), 
-		linear-gradient(180deg, #fff0 20% , var(--c1) 50%) var(--gp),  
-		radial-gradient(circle at 53% 30%, var(--rainbow)) var(--gp), 
-		radial-gradient(circle at 49% 25%, var(--shine)) var(--gp);
-}
-
 
 
 /****** Animation *******/
