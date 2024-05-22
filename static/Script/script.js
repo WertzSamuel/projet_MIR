@@ -115,8 +115,18 @@ function loadImageRequest(){
 function get_top() {
     $.get('/get_top', function(data){
         var images_html = '';
+        var image_req = data[0];
+        var classe_req = image_req.split("/").pop().split("_")[0];
         data.forEach(function(image){
-            images_html += '<img class="image px-2 py-2" src="' + image + '" alt="Image" style="width:20%">';
+            var nom_image = image.split("/").pop();
+            var classe = nom_image.split("_")[0];
+            console.log(classe)
+            if (classe == classe_req) {
+                images_html += '<img class="image my-2 mx-2 " src="' + image + '" alt="' +nom_image+ '" title="' +nom_image+ '" style="width:18%; border: 0.3rem solid green;">';
+            } else {
+                images_html += '<img class="image my-2 mx-2" src="' + image + '" alt="' +nom_image+ '" title="' +nom_image+ '" style="width:18%; border: 0.3rem solid red;">';
+            }
+            
         });
         $("#conteneur_images").html(images_html);
     });
