@@ -164,7 +164,7 @@ def get_moy():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    salt = "gz42"
+    salt = "hs21"
     if request.method == 'POST' and 'form_login' in request.form:
         pwd = request.form.get('password') + salt
         hash_pwd = hashlib.md5(pwd.encode())
@@ -181,7 +181,7 @@ def login():
 
 @app.route('/register', methods=['POST'])
 def register():
-    salt = "gz42"
+    salt = "hs21"
     if request.method == 'POST' and 'login' in request.form:
         return render_template('login.html')
     if request.method == 'POST' and 'form_register' in request.form:
