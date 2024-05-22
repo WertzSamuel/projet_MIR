@@ -11,6 +11,7 @@ config = dict()
 config['descripteur'] = dict()
 config['image_url'] = ''
 config['folder_model'] = list()
+config['old_folder_model'] = []
 config['features'] = list()
 config['distance'] = ''
 config['images_proches'] = list()
@@ -82,6 +83,12 @@ def search():
         else:
             requests = [image_name]
             session['all'] = False
+
+        print(config['old_folder_model'])
+        print(config['folder_model'])
+        if config['old_folder_model'] != config['folder_model']:
+            config['old_folder_model'] = config['folder_model'].copy()
+            config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
 
         # On effectue la recherche 
         total_time = 0

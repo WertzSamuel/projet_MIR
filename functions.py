@@ -55,6 +55,7 @@ def update_descripteur_config(form):
         'Xception_2': form.get('Xception_2'),     
         'InceptionV3': form.get('InceptionV3'),     
         'InceptionV3_2': form.get('InceptionV3_2'), 
+        'ResNet50Tune': form.get('ResNet50Tune')
     }
     return descripteurs
 
