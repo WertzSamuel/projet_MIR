@@ -163,14 +163,17 @@ function get_metrics() {
         $.each(data, function(index, item){
             $('#metricTable tbody').append('<tr><td>' + item.Requete + '</td><td>' + item.R50 + '</td><td>' + item.R100 + '</td><td>' + item.P50 + '</td><td>' + item.P100 + '</td><td>' + item.AP50 + '</td><td>' + item.AP100  + '</td></tr>');
         });
-        $('#metricContainer').show();
     })
     $.get('/get_moy', function(moy){
         var contenuElement = document.getElementById("MAP50");
         contenuElement.textContent = "MaP top 50 : " + moy[0];
         var contenuElement = document.getElementById("MAP100");
         contenuElement.textContent = "MaP top 100 : " + moy[1];
+        $('#metricContainer').show();
+        $('#metricTable').show();
     });
+
+    
 }
 
 $(document).ready(function(){

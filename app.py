@@ -66,6 +66,7 @@ def search():
             return redirect(url_for('search'))
         
         # On récupère le chemin des descripteurs sélectionnés
+        config['folder_model'].clear()
         for desc in config['descripteur']:
             if config['descripteur'][desc] == 'on':
                 folder_model = "static/" + desc.upper() + ".json"
