@@ -132,7 +132,7 @@ def get_time_data():
 @app.route("/get_metric_data")
 def get_metric_data():
 
-    if session.get('indexation_done') and session.get('all'):
+    if session.get('indexation_done'):
         data = [
             {'Requete' : config['metrics'][i][0], 
             'R50': round(config['metrics'][i][1], 2), 

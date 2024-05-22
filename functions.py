@@ -127,6 +127,9 @@ def rappel_precision(top, nom_image_plus_proches, fileName, R):
         rappels.append(rappel)
         precisions.append(precision)
     
+    print(rappels)
+    print(precisions)
+
         
 
     metrics = [R, rappels[(top//2)-1], rappels[(top)-1], precisions[(top//2)-1], precisions[(top)-1]]
@@ -147,6 +150,8 @@ def rappel_precision(top, nom_image_plus_proches, fileName, R):
             metrics.append(average_P/deno)
 
     metrics.append(average_P/deno)
+
+    print(metrics[-2])
 
     #Enregistrement de la courbe RP
     save_folder="static/RP/"
