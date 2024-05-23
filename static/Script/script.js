@@ -99,10 +99,26 @@ function toggleDistances() {
 }
 
 // Charge l'image requête
-function loadImageRequest(){
+function loadImageRequest(data){
     var image_selected = $("#imageSelect").val();
-    if (image_selected != "All_R") {
+    var marque_selected = $("#marque").val();
+    var modele_selected = $("#modele").val();
+    var numero_selected = $("#numeroImage").val();
+    if (image_selected != "Autres") {
+        $("#AutreImage").hide();
+    }
+    if (image_selected != "All_R" && image_selected != "Autres") {
         var image_path = "/static/images_requêtes/" + image_selected + ".jpg"
+        $("#image_requete").attr("src",image_path);
+    }
+    else if (image_selected == "Autres") {
+        $("#AutreImage").show();
+        var image_path = "/static/dataset/" 
+        + marque_selected 
+        + "_" + modele_selected 
+        + "_" + data[marque_selected].marque 
+        + "_" + data[marque_selected][modele_selected].modele 
+        + "_" + numero_selected + ".jpg"
         $("#image_requete").attr("src",image_path);
     }
     else {
@@ -120,7 +136,6 @@ function get_top() {
         data.forEach(function(image){
             var nom_image = image.split("/").pop();
             var classe = nom_image.split("_")[0];
-            console.log(classe)
             if (classe == classe_req) {
                 images_html += '<img class="image my-2 mx-2 " src="' + image + '" alt="' +nom_image+ '" title="' +nom_image+ '" style="width:18%; border: 0.3rem solid green;">';
             } else {
@@ -158,17 +173,28 @@ function get_time() {
 
 // Affiche le tableau des métriques
 function get_metrics() {
+    
     $.get('/get_metric_data', function(data){
+        const top = data[data.length - 1].top;
+        const metrics = data.slice(0, -1); 
+        for (let i = 0; i < 3; i++) {
+            $('#thead').append('<th> Top '+ String(top/2) + '</th>')    
+            $('#thead').append('<th> Top '+ String(top) + '</th>')    
+        }
         $('#metricTable tbody').empty();
-        $.each(data, function(index, item){
+        $.each(metrics, function(index, item){
             $('#metricTable tbody').append('<tr><td>' + item.Requete + '</td><td>' + item.R50 + '</td><td>' + item.R100 + '</td><td>' + item.P50 + '</td><td>' + item.P100 + '</td><td>' + item.AP50 + '</td><td>' + item.AP100  + '</td></tr>');
         });
+        
+
     })
-    $.get('/get_moy', function(moy){
+    $.get('/get_moy', function(data){
+        const top = data[data.length - 1].top;
+        const moy = data.slice(0, -1); 
         var contenuElement = document.getElementById("MAP50");
-        contenuElement.textContent = "MaP top 50 : " + moy[0];
+        contenuElement.textContent = "MaP top "+ String(top/2) + " : "  + moy[0];
         var contenuElement = document.getElementById("MAP100");
-        contenuElement.textContent = "MaP top 100 : " + moy[1];
+        contenuElement.textContent = "MaP top "+ String(top) + " : " + moy[1];
         $('#metricContainer').show();
         $('#metricTable').show();
     });
@@ -180,10 +206,18 @@ $(document).ready(function(){
 
 
     $("#imageSelect").change( function( event ) {
-        loadImageRequest();
+        fetch('static/data.json')
+        .then(response => response.json())
+        .then(data => {
+            loadImageRequest(data);
+        });
       });
 
-    loadImageRequest();    
+    fetch('static/data.json')
+    .then(response => response.json())
+    .then(data => {
+        loadImageRequest(data);
+    });
     get_time();
     get_top();
     get_RP(); 
@@ -191,3 +225,70 @@ $(document).ready(function(){
     
     
 });
+
+// Charger le fichier JSON
+fetch('static/data.json')
+.then(response => response.json())
+.then(data => {
+    initializeSelectors(data);
+});
+
+function initializeSelectors(data) {
+    const marqueSelect = document.getElementById('marque');
+    const modeleSelect = document.getElementById('modele');
+    const numeroImageSelect = document.getElementById('numeroImage');
+
+    // Remplir la liste déroulante des marques
+    for (const marqueId in data) {
+        const marque = data[marqueId].marque;
+        const option = document.createElement('option');
+        option.value = marqueId;
+        option.textContent = marque;
+        marqueSelect.appendChild(option);
+    }
+
+    // Mettre à jour les modèles et numéros d'image lorsque la marque change
+    marqueSelect.addEventListener('change', () => {
+        const selectedMarqueId = marqueSelect.value;
+        modeleSelect.innerHTML = '';
+        numeroImageSelect.innerHTML = '';
+
+        const marqueData = data[selectedMarqueId];
+        for (const modeleId in marqueData) {
+            if (modeleId !== 'marque') {
+                const modele = marqueData[modeleId].modele;
+                const option = document.createElement('option');
+                option.value = modeleId;
+                option.textContent = modele;
+                modeleSelect.appendChild(option);
+            }
+        }
+
+        // Simuler un changement pour remplir les numéros d'image pour le premier modèle par défaut
+        modeleSelect.dispatchEvent(new Event('change'));
+        loadImageRequest(data);
+    });
+
+    // Mettre à jour les numéros d'image lorsque le modèle change
+    modeleSelect.addEventListener('change', () => {
+        const selectedMarqueId = marqueSelect.value;
+        const selectedModeleId = modeleSelect.value;
+        numeroImageSelect.innerHTML = '';
+
+        const numeroImages = data[selectedMarqueId][selectedModeleId].numero;
+        for (const numero of numeroImages) {
+            const option = document.createElement('option');
+            option.value = numero;
+            option.textContent = numero;
+            numeroImageSelect.appendChild(option);
+        }
+        loadImageRequest(data);
+    });
+
+    // Déclencher le changement initial pour remplir les modèles et numéros d'image
+    marqueSelect.dispatchEvent(new Event('change'));
+
+    numeroImageSelect.addEventListener('change', () => {
+        loadImageRequest(data);
+    });
+    }

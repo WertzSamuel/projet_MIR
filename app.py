@@ -3,6 +3,7 @@ from functions import update_descripteur_config, is_descripteur_selected
 from functions import loadFeatures, Recherche, rappel_precision
 from distances import *
 import hashlib
+import json
 
 app = Flask(__name__)
 
@@ -19,6 +20,8 @@ config['RP'] = list()
 config['concatenate'] = ''
 config['time'] = [0]*3
 config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
+config['metrics'].append(['Autre', 0, 0, 0, 0, 0, 0])
+config['top'] = 50
 
 requete = {"1_4_Kia_stinger_1944": 0,
             "1_2_Kia_sorento_1675": 1,
@@ -35,6 +38,9 @@ requete = {"1_4_Kia_stinger_1944": 0,
             "9_0_Audi_A6_12288": 12,
             "9_3_Audi_Q7_12722": 13,
             "9_4_Audi_A1_12833": 14}
+
+with open("static/data.json", 'r') as f:
+    data = json.load(f)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -59,6 +65,11 @@ def search():
         config['distance'] = request.form.get("distance")
         config['top'] = int(request.form.get("top"))
         image_name = request.form.get('imageSelect')
+        classe = request.form.get('marque')
+        marque = data[classe]["marque"]
+        sousclasse = request.form.get('modele')
+        modele = data[classe][sousclasse]["modele"]
+        numero = request.form.get('numeroImage')
         config['descripteur'] = update_descripteur_config(request.form)
 
         # Message d'erreur si pas de descripteur sélectionné
@@ -76,10 +87,17 @@ def search():
         # Chargement des descripteurs
         config['features'] = loadFeatures(config['concatenate'], config['folder_model'])
 
+        
         # On vérifie si on doit exécuter les requêtes ou une seule
+        session['autre'] = False
         if image_name == "All_R":
             requests = requete
             session['all'] = True
+        elif image_name == "Autres":
+            session['autre'] = True
+            image_search = classe + "_" + sousclasse + "_" + marque + "_" + modele + "_" + numero
+            requests = [image_search]
+            session['all'] = False
         else:
             requests = [image_name]
             session['all'] = False
@@ -89,18 +107,29 @@ def search():
         if config['old_folder_model'] != config['folder_model']:
             config['old_folder_model'] = config['folder_model'].copy()
             config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
+            config['metrics'].append(['Autre', 0, 0, 0, 0, 0, 0])
 
         # On effectue la recherche 
         total_time = 0
-        for i, req in enumerate(requete):
-            if req in requests:
-                config['image_url'] = "static/images_requêtes/" + req +".jpg"
-                config['images_proches'], noms_proches, search_time = Recherche(config['image_url'], config['features'], config['distance'], config['top'])
-                config['RP'], config['metrics'][i] = rappel_precision(config['top'], noms_proches, config['image_url'], config['metrics'][i][0])
-                session['indexation_done'] = True
-                total_time += search_time
-        config['time'] = [total_time, total_time/len(requests)]
-        flash('Recherche terminée', 'success')  
+        if not session['autre']:
+            for i, req in enumerate(requete):
+                if req in requests:
+                    config['image_url'] = "static/images_requêtes/" + req +".jpg"
+                    config['images_proches'], noms_proches, search_time = Recherche(config['image_url'], config['features'], config['distance'], config['top'])
+                    config['RP'], config['metrics'][i] = rappel_precision(config['top'], noms_proches, config['image_url'], config['metrics'][i][0])
+                    session['indexation_done'] = True
+                    total_time += search_time
+            config['time'] = [total_time, total_time/len(requests)]
+            flash('Recherche terminée', 'success')  
+        else:
+            config['image_url'] = "static/images_requêtes/" + image_search +".jpg"
+            config['images_proches'], noms_proches, search_time = Recherche(config['image_url'], config['features'], config['distance'], config['top'])
+            config['RP'], config['metrics'][15] = rappel_precision(config['top'], noms_proches, config['image_url'], "Autre")
+            session['indexation_done'] = True
+            total_time += search_time
+            config['time'] = [total_time, total_time/len(requests)]
+            flash('Recherche terminée', 'success')  
+
 
         return redirect(url_for('search'))
 
@@ -148,8 +177,10 @@ def get_metric_data():
             'P50': round(config['metrics'][i][3], 2),
             'P100': round(config['metrics'][i][4], 2), 
             'AP50': round(config['metrics'][i][5], 2),
-            'AP100': round(config['metrics'][i][6], 2)}
-        for i in range(15)]
+            'AP100': round(config['metrics'][i][6], 2),
+            }
+        for i in range(16)]
+        data.append({'top': config['top']})
 
         return jsonify(data)
     
@@ -166,6 +197,7 @@ def get_moy():
                 s_AP100 += element[6]
                 c += 1
         moy = [str(round(s_AP50/c, 3)), str(round(s_AP100/c, 3))]
+        moy.append({'top': config['top']})
 
         return jsonify(moy)
     
