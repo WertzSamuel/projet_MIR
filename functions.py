@@ -124,7 +124,7 @@ def rappel_precision(top, nom_image_plus_proches, fileName, R):
 
         # Calul du rappel et de la précision
         precision = (val/(j+1)) * 100
-        rappel = (val/top) * 100
+        rappel = (val/size) * 100
         rappels.append(rappel)
         precisions.append(precision)
     

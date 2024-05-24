@@ -192,9 +192,9 @@ function get_metrics() {
         const top = data[data.length - 1].top;
         const moy = data.slice(0, -1); 
         var contenuElement = document.getElementById("MAP50");
-        contenuElement.textContent = "MaP top "+ String(top/2) + " : "  + moy[0];
+        contenuElement.textContent = "MaP top "+ String(top/2) + " : "  + moy[0] + " %";
         var contenuElement = document.getElementById("MAP100");
-        contenuElement.textContent = "MaP top "+ String(top) + " : " + moy[1];
+        contenuElement.textContent = "MaP top "+ String(top) + " : " + moy[1] + " %";
         $('#metricContainer').show();
         $('#metricTable').show();
     });
