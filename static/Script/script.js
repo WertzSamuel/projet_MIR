@@ -204,7 +204,9 @@ function get_metrics() {
 
 $(document).ready(function(){
 
-
+    $("#Recherche").click(function(event) {
+        $('#modal-loading').modal('show');
+    });
     $("#imageSelect").change( function( event ) {
         fetch('static/data.json')
         .then(response => response.json())
