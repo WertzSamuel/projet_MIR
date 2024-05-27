@@ -13,7 +13,6 @@ def concatenation(folders):
     _,nom1 = folder_model1.split('/')
     _,nom2 = folder_model2.split('/')
     folder_name = "static/" + nom1.rstrip(".json") + "_" + nom2
-    print(folder_name)
     if not os.path.exists(folder_name):
 
         with open(folder_model1, "r") as fichier:
@@ -127,10 +126,11 @@ def rappel_precision(top, nom_image_plus_proches, fileName, R):
         rappel = (val/size) * 100
         rappels.append(rappel)
         precisions.append(precision)
-    
-    print(rappels)
-    print(precisions)
 
+    if val > 0:
+        R_Precision = precisions[val-1]
+    else:
+        R_Precision = 0
         
 
     metrics = [R, rappels[(top//2)-1], rappels[(top)-1], precisions[(top//2)-1], precisions[(top)-1]]
@@ -151,8 +151,8 @@ def rappel_precision(top, nom_image_plus_proches, fileName, R):
             metrics.append(average_P/deno)
 
     metrics.append(average_P/deno)
+    metrics.append(R_Precision)
 
-    print(metrics[-2])
 
     #Enregistrement de la courbe RP
     save_folder="static/RP/"

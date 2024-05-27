@@ -183,7 +183,7 @@ function get_metrics() {
         }
         $('#metricTable tbody').empty();
         $.each(metrics, function(index, item){
-            $('#metricTable tbody').append('<tr><td>' + item.Requete + '</td><td>' + item.R50 + '</td><td>' + item.R100 + '</td><td>' + item.P50 + '</td><td>' + item.P100 + '</td><td>' + item.AP50 + '</td><td>' + item.AP100  + '</td></tr>');
+            $('#metricTable tbody').append('<tr><td>' + item.Requete + '</td><td>' + item.R50 + '</td><td>' + item.R100 + '</td><td>' + item.P50 + '</td><td>' + item.P100 + '</td><td>' + item.AP50 + '</td><td>' + item.AP100  + '</td><td>' + item.R_Precision + '</td></tr>');
         });
         
 

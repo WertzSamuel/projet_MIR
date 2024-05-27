@@ -19,8 +19,8 @@ config['images_proches'] = list()
 config['RP'] = list()
 config['concatenate'] = ''
 config['time'] = [0]*3
-config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
-config['metrics'].append(['Autre', 0, 0, 0, 0, 0, 0])
+config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
+config['metrics'].append(['Autre', 0, 0, 0, 0, 0, 0, 0])
 config['top'] = 50
 
 requete = {"1_4_Kia_stinger_1944": 0,
@@ -102,12 +102,10 @@ def search():
             requests = [image_name]
             session['all'] = False
 
-        print(config['old_folder_model'])
-        print(config['folder_model'])
         if config['old_folder_model'] != config['folder_model']:
             config['old_folder_model'] = config['folder_model'].copy()
-            config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
-            config['metrics'].append(['Autre', 0, 0, 0, 0, 0, 0])
+            config['metrics'] = [['R'+str(i), 0, 0, 0, 0, 0, 0, 0] for i in range(1, 16)]
+            config['metrics'].append(['Autre', 0, 0, 0, 0, 0, 0, 0])
 
         # On effectue la recherche 
         total_time = 0
@@ -149,7 +147,6 @@ def get_RP():
         #flash("Veuillez effectuer la recherche en indexant l'image d'abord")
         return []
     else:
-        print(config['RP'])
         return config['RP']
     
 @app.route("/get_time_data")
@@ -178,6 +175,7 @@ def get_metric_data():
             'P100': round(config['metrics'][i][4], 2), 
             'AP50': round(config['metrics'][i][5], 2),
             'AP100': round(config['metrics'][i][6], 2),
+            'R_Precision': round(config['metrics'][i][7], 2)
             }
         for i in range(16)]
         data.append({'top': config['top']})
