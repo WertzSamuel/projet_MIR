@@ -1,5 +1,5 @@
-docker run -it --rm -p 5000:5000 -e TEST1="1000" -e DISPLAY=192.168.1.45:0.0 -v "C:/Users/Utilisateur/Documents/coursMA1/MIR:/opt/TP" nayruiv/monimage:latest
+### Projet de Multimedia Information Retrieval
+Ce projet a pour objectif de créer un moteur de recherche d'image de voiture. Pour cela, nous avons utilisé une variété de descripteurs, des méthodes traditionnelles aux modèles de deep learning, pour indexer les images selon la marque et le modèle. Nous avons également implémenté différentes méthodes de calcul de distance pour la recherche d'une image requête. Nous permettons ensuite l'analyse de notre moteur de recherche grâce à une multitude de métriques comme le rappel et la précision.
 
-docker run -it --rm -p 5000:5000 -e TEST1="1000" -e DISPLAY=192.168.56.1:0.0 -v "C:/Users/Utilisateur/Documents/coursMA1/MIR:/opt/TP" nayruiv/monimage:latest
-
-docker run -it --rm -p 5000:5000 -e TEST1="1000" -e DISPLAY=192.168.56.1:0.0 -v "C:\Users\harri\OneDrive - UMONS\MA1\Q2\Multimedia Information Retrieval\Projet AA Machine amd Deep Learning for Multimedia Retrieval\Codes\projet_MIR:/opt/TP" nayruiv/monimage:latest
+L'application que nous avons développé est accessible via le lien suivant.
+Site web : http://163.172.234.176:8181/
